@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - Drug Information Database</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="logo">
+                <h1>MediSearch</h1>
+            </div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="#" id="navUsername" style="display: none;"></a>
+                <a href="login.html" id="navLogin">Login</a>
+                <a href="#" id="navLogout" style="display: none;">Logout</a>
+            </div>
+        </nav>
+        
+        <div class="mini-search">
+            <form id="searchForm" class="search-form compact">
+                <div class="search-input-container">
+                    <input type="text" id="searchInput" placeholder="Search again...">
+                    <button type="submit" class="search-btn">Search</button>
+                </div>
+                
+                <div class="search-options">
+                    <label>
+                        <input type="radio" name="searchType" value="drug" checked>
+                        Drug
+                    </label>
+                    <label>
+                        <input type="radio" name="searchType" value="side_effect">
+                        Side Effect
+                    </label>
+                    <label>
+                        <input type="radio" name="searchType" value="manufacturer">
+                        Manufacturer
+                    </label>
+                </div>
+            </form>
+        </div>
+    </header>
+
+    <main>
+        <section class="results-container">
+            <div id="searchResults" class="search-results">
+                <!-- Search results will be loaded here via JavaScript -->
+                <p>Loading results...</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 MediSearch. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript Files -->
+    <script src="js/utils.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/search.js"></script>
+    <script src="js/auth.js"></script>
+</body>
+</html>
