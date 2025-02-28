@@ -1,24 +1,54 @@
 function loadDrugInfo(drugId) {
     const drugInfoContainer = document.getElementById('drugInfo');
-    drugInfoContainer.innerHTML = '<p>Loading drug information...</p>';
+    drugInfoContainer.innerHTML = `
+        <div class="text-center p-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3">Loading drug information...</p>
+        </div>
+    `;
+    
+    // Update breadcrumb
+    const drugNameBreadcrumb = document.getElementById('drugName');
     
     // Fetch drug basic information
     fetch(`../php/get_drug.php?id=${drugId}`)
         .then(response => response.json())
         .then(drug => {
             if (!drug || drug.status === 'error') {
-                drugInfoContainer.innerHTML = '<p>Error loading drug information.</p>';
+                drugInfoContainer.innerHTML = `
+                    <div class="alert alert-danger m-4">
+                        <h4 class="alert-heading">Error!</h4>
+                        <p>Could not load drug information. The drug may not exist or there was a server error.</p>
+                    </div>
+                `;
                 return;
+            }
+            
+            // Update breadcrumb with drug name
+            if (drugNameBreadcrumb) {
+                drugNameBreadcrumb.textContent = drug.drug_name;
             }
             
             // Create HTML for drug info
             let html = `
                 <h1>${drug.drug_name}</h1>
                 <div class="drug-details">
-                    <p><strong>DrugBank ID:</strong> ${drug.drugbank_id}</p>
-                    <p><strong>Formula:</strong> ${drug.molecular_formula || 'Not available'}</p>
-                    <p><strong>Weight:</strong> ${drug.molecular_weight || 'Not available'} g/mol</p>
-                    <p><strong>Classification:</strong> ${drug.Classification_direct_parent || 'Not available'}</p>
+                    <div class="drug-info-columns">
+                        <div class="drug-info-text">
+                            <p><strong>DrugBank ID:</strong> ${drug.drugbank_id}</p>
+                            <p><strong>Formula:</strong> ${drug.molecular_formula || 'Not available'}</p>
+                            <p><strong>Weight:</strong> ${drug.molecular_weight || 'Not available'} g/mol</p>
+                            <p><strong>Classification:</strong> ${drug.Classification_direct_parent || 'Not available'}</p>
+                        </div>
+                        <div class="drug-image-container" id="drugImageContainer">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading structure image...</span>
+                            </div>
+                            <p class="mt-2">Loading structure image...</p>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="drug-description">
@@ -33,21 +63,39 @@ function loadDrugInfo(drugId) {
                 
                 <div id="sideEffects">
                     <h2>Side Effects</h2>
-                    <p>Loading side effects...</p>
+                    <div class="text-center py-3">
+                        <div class="spinner-border text-primary spinner-border-sm" role="status">
+                            <span class="visually-hidden">Loading side effects...</span>
+                        </div>
+                        <p class="mt-2">Loading side effects...</p>
+                    </div>
                 </div>
                 
                 <div id="manufacturers">
                     <h2>Manufacturers</h2>
-                    <p>Loading manufacturers...</p>
+                    <div class="text-center py-3">
+                        <div class="spinner-border text-primary spinner-border-sm" role="status">
+                            <span class="visually-hidden">Loading manufacturers...</span>
+                        </div>
+                        <p class="mt-2">Loading manufacturers...</p>
+                    </div>
                 </div>
                 
                 <div id="interactions">
                     <h2>Drug Interactions</h2>
-                    <p>Loading interactions...</p>
+                    <div class="text-center py-3">
+                        <div class="spinner-border text-primary spinner-border-sm" role="status">
+                            <span class="visually-hidden">Loading interactions...</span>
+                        </div>
+                        <p class="mt-2">Loading interactions...</p>
+                    </div>
                 </div>
             `;
             
             drugInfoContainer.innerHTML = html;
+            
+            // Load PubChem image
+            loadPubChemImage(drugId);
             
             // Load additional information
             loadSideEffects(drugId);
@@ -55,7 +103,36 @@ function loadDrugInfo(drugId) {
             loadInteractions(drugId);
         })
         .catch(error => {
-            drugInfoContainer.innerHTML = `<p>Error: ${error.message}</p>`;
+            drugInfoContainer.innerHTML = `
+                <div class="alert alert-danger m-4">
+                    <h4 class="alert-heading">Error!</h4>
+                    <p>Error: ${error.message}</p>
+                </div>
+            `;
+        });
+}
+
+function loadPubChemImage(drugId) {
+    const container = document.getElementById('drugImageContainer');
+    
+    fetch(`../php/get_pubchem_cid.php?id=${drugId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success' && data.pubchem_cid) {
+                // PubChem image URL
+                const imageUrl = `https://pubchem.ncbi.nlm.nih.gov/image/imgsrv.fcgi?cid=${data.pubchem_cid}&t=l`;
+                
+                // Create image element
+                container.innerHTML = `
+                    <img src="${imageUrl}" alt="Drug structure" class="drug-structure-image">
+                    <p class="image-caption">Structure from PubChem</p>
+                `;
+            } else {
+                container.innerHTML = '<p class="text-muted">No structure image available</p>';
+            }
+        })
+        .catch(error => {
+            container.innerHTML = '<p class="text-muted">No structure image available</p>';
         });
 }
 
@@ -66,17 +143,17 @@ function loadSideEffects(drugId) {
         .then(response => response.json())
         .then(data => {
             if (!data || data.length === 0) {
-                container.innerHTML = '<p>No side effects information available.</p>';
+                container.innerHTML = '<h2>Side Effects</h2><p>No side effects information available.</p>';
                 return;
             }
             
-            let html = '<ul class="side-effects-list">';
+            let html = '<h2>Side Effects</h2><ul class="side-effects-list">';
             data.forEach(effect => {
                 let frequencyInfo = '';
                 if (effect.frequency_percent) {
-                    frequencyInfo = ` - ${effect.frequency_percent}`;
+                    frequencyInfo = ` <span class="badge bg-info text-white">${effect.frequency_percent}</span>`;
                 } else if (effect.lower_bound && effect.upper_bound) {
-                    frequencyInfo = ` - ${effect.lower_bound}% to ${effect.upper_bound}%`;
+                    frequencyInfo = ` <span class="badge bg-info text-white">${effect.lower_bound}% to ${effect.upper_bound}%</span>`;
                 }
                 
                 html += `<li>${effect.se_name}${frequencyInfo}</li>`;
@@ -86,22 +163,22 @@ function loadSideEffects(drugId) {
             container.innerHTML = html;
         })
         .catch(error => {
-            container.innerHTML = `<p>Error loading side effects: ${error.message}</p>`;
+            container.innerHTML = `<h2>Side Effects</h2><p class="text-danger">Error loading side effects: ${error.message}</p>`;
         });
 }
 
 function loadManufacturers(drugId) {
     const container = document.getElementById('manufacturers');
     
-    fetch(`../php/get_drug_manufacturers.php?id=${drugId}`)
+    fetch(`../php/get_manufacturers.php?id=${drugId}`)
         .then(response => response.json())
         .then(data => {
             if (!data || data.length === 0) {
-                container.innerHTML = '<p>No manufacturer information available.</p>';
+                container.innerHTML = '<h2>Manufacturers</h2><p>No manufacturer information available.</p>';
                 return;
             }
             
-            let html = '<ul class="manufacturers-list">';
+            let html = '<h2>Manufacturers</h2><ul class="manufacturers-list">';
             data.forEach(manufacturer => {
                 html += `<li>${manufacturer.manufacturer_name}</li>`;
             });
@@ -110,7 +187,7 @@ function loadManufacturers(drugId) {
             container.innerHTML = html;
         })
         .catch(error => {
-            container.innerHTML = `<p>Error loading manufacturers: ${error.message}</p>`;
+            container.innerHTML = `<h2>Manufacturers</h2><p class="text-danger">Error loading manufacturers: ${error.message}</p>`;
         });
 }
 
@@ -121,15 +198,15 @@ function loadInteractions(drugId) {
         .then(response => response.json())
         .then(data => {
             if (!data || data.length === 0) {
-                container.innerHTML = '<p>No interactions information available.</p>';
+                container.innerHTML = '<h2>Drug Interactions</h2><p>No interactions information available.</p>';
                 return;
             }
             
-            let html = '<ul class="interactions-list">';
+            let html = '<h2>Drug Interactions</h2><ul class="interactions-list">';
             data.forEach(interaction => {
                 html += `
                     <li>
-                        <a href="drug.html?id=${interaction.idDrug}">${interaction.drug_name}</a>
+                        <a href="drug.html?id=${interaction.idDrug}" class="text-primary">${interaction.drug_name}</a>
                         ${interaction.interaction_description ? ' - ' + interaction.interaction_description : ''}
                     </li>
                 `;
@@ -139,6 +216,6 @@ function loadInteractions(drugId) {
             container.innerHTML = html;
         })
         .catch(error => {
-            container.innerHTML = `<p>Error loading interactions: ${error.message}</p>`;
+            container.innerHTML = `<h2>Drug Interactions</h2><p class="text-danger">Error loading interactions: ${error.message}</p>`;
         });
 }

@@ -4,73 +4,113 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Drug Information Database</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom styles to override Bootstrap if needed -->
+    <link rel="stylesheet" href="css/custom.css">
 </head>
 <body>
     <header>
-        <nav class="navbar">
-            <div class="logo">
-                <h1>MediSearch</h1>
-            </div>
-            <div class="nav-links">
-                <a href="index.html" class="active">Home</a>
-                <a href="#" id="navUsername" style="display: none;"></a>
-                <a href="login.html" id="navLogin">Login</a>
-                <a href="#" id="navLogout" style="display: none;">Logout</a>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">DrugSearch</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="index.html">Home</a>
+                        </li>
+                        <li class="nav-item" id="navUsernameItem" style="display: none;">
+                            <a class="nav-link" href="#" id="navUsername"></a>
+                        </li>
+                        <li class="nav-item" id="navLoginItem">
+                            <a class="nav-link" href="login.html" id="navLogin">Login</a>
+                        </li>
+                        <li class="nav-item" id="navLogoutItem" style="display: none;">
+                            <a class="nav-link" href="#" id="navLogout">Logout</a>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </nav>
     </header>
 
     <main>
-        <section class="hero">
-            <div class="hero-content">
-                <h1>Find Drug Information</h1>
-                <p>Search for drugs, side effects, or manufacturers</p>
+        <section class="bg-primary text-white py-5 mb-4">
+            <div class="container text-center">
+                <h1 class="display-4">Find Drug Information</h1>
+                <p class="lead mb-4">Search for drugs, side effects, or manufacturers</p>
                 
-                <form id="searchForm" class="search-form">
-                    <div class="search-input-container">
-                        <input type="text" id="searchInput" placeholder="Enter drug name, side effect, or manufacturer..." required>
-                        <button type="submit" class="search-btn">Search</button>
+                <form id="searchForm" class="mx-auto" style="max-width: 600px;">
+                    <div class="input-group mb-3">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Enter drug name, side effect, or manufacturer..." required>
+                        <button type="submit" class="btn btn-info text-white">Search</button>
                     </div>
                     
-                    <div class="search-options">
-                        <label>
-                            <input type="radio" name="searchType" value="drug" checked>
-                            Drug Name
-                        </label>
-                        <label>
-                            <input type="radio" name="searchType" value="side_effect">
-                            Side Effect
-                        </label>
-                        <label>
-                            <input type="radio" name="searchType" value="manufacturer">
-                            Manufacturer
-                        </label>
+                    <div class="d-flex justify-content-center gap-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="searchType" id="drugSearch" value="drug" checked>
+                            <label class="form-check-label" for="drugSearch">
+                                Drug Name
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="searchType" id="sideEffectSearch" value="side_effect">
+                            <label class="form-check-label" for="sideEffectSearch">
+                                Side Effect
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="searchType" id="manufacturerSearch" value="manufacturer">
+                            <label class="form-check-label" for="manufacturerSearch">
+                                Manufacturer
+                            </label>
+                        </div>
                     </div>
                 </form>
             </div>
         </section>
         
-        <section class="features">
-            <div class="feature-card">
-                <h3>Drug Information</h3>
-                <p>Get detailed information about medications including their uses, side effects, and interactions.</p>
-            </div>
-            <div class="feature-card">
-                <h3>Side Effects</h3>
-                <p>Search by side effect to find which medications might cause specific symptoms.</p>
-            </div>
-            <div class="feature-card">
-                <h3>Manufacturers</h3>
-                <p>Browse drugs by their manufacturing companies and learn about pharmaceutical brands.</p>
+        <section class="container mb-5">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title text-primary">Drug Information</h3>
+                            <p class="card-text">Get detailed information about medications including their uses, side effects, and interactions.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title text-primary">Side Effects</h3>
+                            <p class="card-text">Search by side effect to find which medications might cause specific symptoms.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title text-primary">Manufacturers</h3>
+                            <p class="card-text">Browse drugs by their manufacturing companies and learn about pharmaceutical brands.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
 
-    <footer>
-        <p>&copy; 2025 MediSearch. All rights reserved.</p>
+    <footer class="bg-dark text-white py-4 mt-auto">
+        <div class="container text-center">
+            <p class="mb-0">&copy; 2025 DrugSearch. All rights reserved.</p>
+        </div>
     </footer>
 
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <!-- JavaScript Files -->
     <script src="js/utils.js"></script>
     <script src="js/main.js"></script>

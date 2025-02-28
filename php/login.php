@@ -2,7 +2,7 @@
 session_start();
 require_once 'db.php';
 
-// Handle registration
+// Registration
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'register') {
     $email = $_POST['email'] ?? '';
     $username = $_POST['username'] ?? '';
@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     }
 }
 
-// Handle login
+// Login
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'login') {
     $email = $_POST['email'] ?? '';
     $password = $_POST['password'] ?? '';
