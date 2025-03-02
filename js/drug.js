@@ -1,3 +1,11 @@
+// Add script to hide loading spinner when content is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        document.getElementById('loadingSpinner').style.display = 'none';
+        document.getElementById('drugContent').style.display = 'block';
+    }, 1000); // Simulating loading delay
+});
+
 function loadDrugInfo(drugId) {
     const drugInfoContainer = document.getElementById('drugInfo');
     drugInfoContainer.innerHTML = `
@@ -13,7 +21,7 @@ function loadDrugInfo(drugId) {
     const drugNameBreadcrumb = document.getElementById('drugName');
     
     // Fetch drug basic information
-    fetch(`../php/get_drug.php?id=${drugId}`)
+    fetch(`php/get_drug.php?id=${drugId}`)
         .then(response => response.json())
         .then(drug => {
             if (!drug || drug.status === 'error') {
@@ -111,6 +119,7 @@ function loadDrugInfo(drugId) {
             `;
         });
 }
+
 
 function loadPubChemImage(drugId) {
     const container = document.getElementById('drugImageContainer');

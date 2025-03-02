@@ -15,7 +15,7 @@ function handleLogin(event) {
     formData.append('email', email);
     formData.append('password', password);
     
-    fetch('../php/login.php', {
+    fetch('php/login.php', {
         method: 'POST',
         body: formData
     })
@@ -25,6 +25,7 @@ function handleLogin(event) {
             // Store user information in session storage
             sessionStorage.setItem('user_id', data.user_id || email);
             sessionStorage.setItem('username', data.username || email.split('@')[0]);
+            sessionStorage.setItem('role', data.role || 'user'); // Store role
             
             showMessage('Login successful', 'success');
             
@@ -66,7 +67,10 @@ function handleRegister(event) {
     formData.append('username', username);
     formData.append('password', password);
     
-    fetch('../php/login.php', {
+    // Adjust the path to match your directory structure
+    const phpPath = 'php/login.php';
+    
+    fetch(phpPath, {
         method: 'POST',
         body: formData
     })
@@ -91,7 +95,7 @@ function handleRegister(event) {
 function handleLogout(event) {
     event.preventDefault();
     
-    fetch('../php/logout.php')
+    fetch('php/logout.php')
         .then(response => response.json())
         .then(data => {
             // Clear session storage

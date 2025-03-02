@@ -11,11 +11,87 @@ function handleSearch(event) {
     // Redirect to search results page
     window.location.href = `search-results.html?search=${encodeURIComponent(searchInput)}&type=${searchType}`;
 }
+
+function initializeAutocomplete() {
+    const searchInput = document.getElementById('searchInput');
+    const autocompleteContainer = document.createElement('div');
+    autocompleteContainer.className = 'autocomplete-container';
+    autocompleteContainer.style.display = 'none';
+    
+    // Insert autocomplete container after search input
+    searchInput.parentNode.insertBefore(autocompleteContainer, searchInput.nextSibling);
+    
+    // Add event listeners for input changes
+    searchInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        if (query.length < 2) {
+            autocompleteContainer.style.display = 'none';
+            return;
+        }
+        
+        // Get selected search type
+        const searchType = document.querySelector('input[name="searchType"]:checked').value;
+        
+        // Fetch suggestions
+        fetch(`php/autocomplete.php?search=${encodeURIComponent(query)}&type=${searchType}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success' && data.suggestions.length > 0) {
+                    // Display suggestions
+                    renderSuggestions(data.suggestions, autocompleteContainer);
+                    autocompleteContainer.style.display = 'block';
+                } else {
+                    autocompleteContainer.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Autocomplete error:', error);
+                autocompleteContainer.style.display = 'none';
+            });
+    });
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!searchInput.contains(e.target) && !autocompleteContainer.contains(e.target)) {
+            autocompleteContainer.style.display = 'none';
+        }
+    });
+    
+    // Show suggestions when input is focused if there's content
+    searchInput.addEventListener('focus', function() {
+        if (this.value.trim().length >= 2) {
+            // Trigger the input event to show suggestions
+            this.dispatchEvent(new Event('input'));
+        }
+    });
+}
+
+function renderSuggestions(suggestions, container) {
+    container.innerHTML = '';
+    
+    suggestions.forEach(suggestion => {
+        const suggestionElement = document.createElement('div');
+        suggestionElement.className = 'autocomplete-item';
+        suggestionElement.textContent = suggestion.text;
+        
+        // Add click handler
+        suggestionElement.addEventListener('click', function() {
+            document.getElementById('searchInput').value = suggestion.text;
+            container.style.display = 'none';
+            
+            // Optional: auto-submit the form
+            // document.getElementById('searchForm').dispatchEvent(new Event('submit'));
+        });
+        
+        container.appendChild(suggestionElement);
+    });
+}
+
 function displaySearchResults(query, type) {
     const resultsContainer = document.getElementById('searchResults');
     resultsContainer.innerHTML = `<p class="text-center"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Searching for ${type}: "${query}"...</p>`;
     
-    fetch(`../php/search_drug.php?search=${encodeURIComponent(query)}&type=${type}`)
+    fetch(`php/search_drug.php?search=${encodeURIComponent(query)}&type=${type}`)
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
@@ -60,6 +136,12 @@ function displaySearchResults(query, type) {
                             `<img src="https://pubchem.ncbi.nlm.nih.gov/image/imgsrv.fcgi?cid=${drug.pubchem_cid}&t=s" alt="${drug.drug_name}" class="drug-thumbnail">` : 
                             `<div class="no-image-placeholder">No structure image available</div>`;
                         
+                        // Show synonym match if applicable
+                        const synonymMatch = drug.matched_synonym ? 
+                            `<div class="synonym-match alert alert-info py-1 px-2 mt-2 mb-0">
+                                <small>Matched synonym: <strong>${drug.matched_synonym}</strong></small>
+                             </div>` : '';
+                        
                         html += `
                             <div class="col-md-6 col-lg-4 mb-4">
                                 <div class="drug-card h-100">
@@ -71,6 +153,7 @@ function displaySearchResults(query, type) {
                                             <h3>${drug.drug_name}</h3>
                                             <p class="text-muted"><strong>DrugBank ID:</strong> ${drug.drugbank_id}</p>
                                             <p>${drug.description ? truncateText(drug.description, 120) : 'No description available'}</p>
+                                            ${synonymMatch}
                                         </div>
                                     </div>
                                     <a href="drug.html?id=${drug.idDrug}" class="btn btn-primary text-white w-100 mt-auto">View Details</a>
@@ -147,6 +230,7 @@ function displaySearchResults(query, type) {
             showMessage('Error: ' + error.message, 'error');
         });
 }
+
 
 function truncateText(text, maxLength) {
     if (text.length <= maxLength) return text;

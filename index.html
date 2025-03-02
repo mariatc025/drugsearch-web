@@ -6,107 +6,114 @@
     <title>Drug Information Database</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom styles to override Bootstrap if needed -->
-    <link rel="stylesheet" href="css/custom.css">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Montserrat:wght@400;500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <div class="container">
-                <a class="navbar-brand" href="index.html">DrugSearch</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="index.html">Home</a>
-                        </li>
-                        <li class="nav-item" id="navUsernameItem" style="display: none;">
-                            <a class="nav-link" href="#" id="navUsername"></a>
-                        </li>
-                        <li class="nav-item" id="navLoginItem">
-                            <a class="nav-link" href="login.html" id="navLogin">Login</a>
-                        </li>
-                        <li class="nav-item" id="navLogoutItem" style="display: none;">
-                            <a class="nav-link" href="#" id="navLogout">Logout</a>
-                        </li>
-                    </ul>
-                </div>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="index.html">
+                    <h1>Drug Search</h1>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="interaction.html">Interactions</a>
+                <a href="druglist.html">Drug List</a>
+                <a href="#" id="navUsername" style="display: none;"></a>
+                <a href="login.html" id="navLogin">Login</a>
+                <a href="#" id="navLogout" style="display: none;">Logout</a>
             </div>
         </nav>
     </header>
 
     <main>
-        <section class="bg-primary text-white py-5 mb-4">
-            <div class="container text-center">
-                <h1 class="display-4">Find Drug Information</h1>
-                <p class="lead mb-4">Search for drugs, side effects, or manufacturers</p>
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Find Drug Information</h1>
+                <p>Search for drugs, side effects, or manufacturers</p>
                 
-                <form id="searchForm" class="mx-auto" style="max-width: 600px;">
-                    <div class="input-group mb-3">
-                        <input type="text" id="searchInput" class="form-control" placeholder="Enter drug name, side effect, or manufacturer..." required>
-                        <button type="submit" class="btn btn-info text-white">Search</button>
+                <div class="search-container">
+                    <div class="search-panel">
+                        <div class="filter-section">
+                            <h3 class="filter-title">Filter By</h3>
+                            <div class="filter-options" id="filterOptions">
+                                <label class="filter-option">
+                                    <input type="radio" name="searchType" value="drug" checked>
+                                    <span class="checkmark"></span>
+                                    <span class="filter-text">Drug Name</span>
+                                </label>
+                                <label class="filter-option">
+                                    <input type="radio" name="searchType" value="side_effect">
+                                    <span class="checkmark"></span>
+                                    <span class="filter-text">Side Effect</span>
+                                </label>
+                                <label class="filter-option">
+                                    <input type="radio" name="searchType" value="manufacturer">
+                                    <span class="checkmark"></span>
+                                    <span class="filter-text">Manufacturer</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="search-section">
+                            <form id="searchForm" class="search-form">
+                                <div class="search-input-container">
+                                    <input type="text" id="searchInput" placeholder="Enter search term..." required>
+                                    <button type="submit" class="search-btn">Search</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                    
-                    <div class="d-flex justify-content-center gap-4">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="searchType" id="drugSearch" value="drug" checked>
-                            <label class="form-check-label" for="drugSearch">
-                                Drug Name
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="searchType" id="sideEffectSearch" value="side_effect">
-                            <label class="form-check-label" for="sideEffectSearch">
-                                Side Effect
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="searchType" id="manufacturerSearch" value="manufacturer">
-                            <label class="form-check-label" for="manufacturerSearch">
-                                Manufacturer
-                            </label>
-                        </div>
-                    </div>
-                </form>
+                </div>
             </div>
         </section>
         
-        <section class="container mb-5">
+        <section class="features container">
             <div class="row g-4">
                 <div class="col-md-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h3 class="card-title text-primary">Drug Information</h3>
-                            <p class="card-text">Get detailed information about medications including their uses, side effects, and interactions.</p>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 10c0-5.523-4.477-10-10-10S0 4.477 0 10c0 5.523 4.477 10 10 10 1.993 0 3.85-.582 5.407-1.584l5.307 5.307 1.414-1.414-5.307-5.307A9.958 9.958 0 0 0 20 10zm-18 0c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8-8-3.589-8-8z"/>
+                            </svg>
                         </div>
+                        <h3>Drug Information</h3>
+                        <p>Get detailed information about medications including their uses, side effects, and interactions.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h3 class="card-title text-primary">Side Effects</h3>
-                            <p class="card-text">Search by side effect to find which medications might cause specific symptoms.</p>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
                         </div>
+                        <h3>Side Effects</h3>
+                        <p>Search by side effect to find which medications might cause specific symptoms.</p>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h3 class="card-title text-primary">Manufacturers</h3>
-                            <p class="card-text">Browse drugs by their manufacturing companies and learn about pharmaceutical brands.</p>
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
                         </div>
+                        <h3>Manufacturers</h3>
+                        <p>Browse drugs by their manufacturing companies and learn about pharmaceutical brands.</p>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <footer class="bg-dark text-white py-4 mt-auto">
-        <div class="container text-center">
-            <p class="mb-0">&copy; 2025 DrugSearch. All rights reserved.</p>
-        </div>
+    <footer>
+        <p>&copy; 2025 DrugSearch. All rights reserved.</p>
     </footer>
 
     <!-- Bootstrap JS Bundle with Popper -->
@@ -116,5 +123,24 @@
     <script src="js/main.js"></script>
     <script src="js/search.js"></script>
     <script src="js/auth.js"></script>
+    <script>
+        // Filter dropdown functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterTitle = document.querySelector('.filter-title');
+            const filterOptions = document.getElementById('filterOptions');
+            
+            // Initially hide the filter options
+            filterOptions.style.maxHeight = '0';
+            filterOptions.style.overflow = 'hidden';
+            
+            filterTitle.addEventListener('click', function() {
+                if (filterOptions.style.maxHeight === '0px') {
+                    filterOptions.style.maxHeight = filterOptions.scrollHeight + 'px';
+                } else {
+                    filterOptions.style.maxHeight = '0';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
