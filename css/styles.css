@@ -144,12 +144,30 @@ a:hover {
   margin-left: 5rem;
   font-size: 1.25rem;
   color: white;
-  text-shadow: 
-      -0.5px -0.5px 0 #73839E,  
-       0.5px -0.5px 0 #73839E,
-      -0.5px  0.5px 0 #73839E,
-       0.5px  0.5px 0 #73839E;
+  background-color: #73839E;
+  padding: 0.5rem 1rem;  
+  border: 2px solid white;  
+  border-radius: 10px;  
+  text-decoration: none;
+  display: inline-block; 
 }
+
+.nav-links a#navLogout {
+  font-size: 1.25rem;
+  color: white;
+  background-color: #73839E;
+  padding: 0.5rem 1rem;  
+  border: 2px solid white;  
+  border-radius: 10px;  
+  text-decoration: none;
+  display: inline-block; 
+}
+
+.nav-links a#navUsername {
+  font-size: 1.25rem;
+  color: #73839E; 
+}
+
 
 .nav.nav-tabs .nav-item {
   flex: 1; 
@@ -1084,6 +1102,22 @@ a:hover {
     margin-top: 2rem;
     padding: 1rem 0;
     border-top: 1px solid #ddd;
+}
+
+.page-button {
+    margin: 0 5px;
+    padding: 8px 12px;
+    border: 1px solid #007bff;
+    background-color: white;
+    color: #007bff;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.page-button.active {
+    background-color: #007bff;
+    color: white;
+    font-weight: bold;
 }
 
 /* Druglist */

@@ -116,3 +116,22 @@ function handleLogout(event) {
             showMessage('Error: ' + error.message, 'error');
         });
 }
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    updateNavigation();
+
+    if (window.location.pathname.includes('profile.html')) {
+        const username = sessionStorage.getItem('username');
+        const email = sessionStorage.getItem('user_id');
+
+        if (username && email) {
+            document.getElementById('profileUsername').textContent = username;
+            document.getElementById('profileEmail').textContent = email;
+        } else {
+            window.location.href = 'login.html'; 
+        }
+
+        document.getElementById('logoutButton').addEventListener('click', handleLogout);
+    }
+});
