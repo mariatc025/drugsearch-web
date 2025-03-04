@@ -142,7 +142,7 @@ a:hover {
 
 .nav-links a#navLogin {
   margin-left: 5rem;
-  font-size: 1.25rem;
+  font-size: 0.9rem;
   color: white;
   background-color: #73839E;
   padding: 0.5rem 1rem;  
@@ -153,7 +153,7 @@ a:hover {
 }
 
 .nav-links a#navLogout {
-  font-size: 1.25rem;
+  font-size: 0.9rem;
   color: white;
   background-color: #73839E;
   padding: 0.5rem 1rem;  
@@ -171,6 +171,84 @@ a:hover {
 
 .nav.nav-tabs .nav-item {
   flex: 1; 
+}
+
+/* Profile avatar styles */
+.avatar-container {
+  position: relative;
+  margin-left: 1rem;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--accent-color);
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--accent-color);
+  transition: border-color 0.2s ease;
+}
+
+.avatar:hover {
+  border-color: var(--dark-color);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Avatar dropdown menu */
+.dropdown-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 200px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 0.5rem 0;
+  z-index: 200;
+  display: none;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-menu a.dropdown-item {
+  display: block;
+  padding: 0.75rem 1.5rem;
+  color: var(--dark-color);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+  margin: 0;
+  width: 100%;
+  border: none;
+  outline: none;
+}
+
+.dropdown-item:hover {
+  background-color: var(--hover-color);
+  color: var(--accent-color);
+}
+
+.username-display {
+  padding: 0.75rem 0.75rem; /* Matching reduced padding */
+  font-weight: 600;
+  color: var(--secondary-color);
+  border-bottom: 1px solid var(--gray-light-color);
+  font-size: 0.95rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Hero Section */
@@ -394,6 +472,67 @@ a:hover {
   line-height: 1.6;
   font-family: 'Montserrat', sans-serif;
 }
+
+/* Autocomplete container positioning */
+.autocomplete-container {
+  position: absolute;
+  z-index: 1000;
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ced4da;
+  border-radius: 0 0 0.25rem 0.25rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  top: 100%; 
+  left: 0;   
+}
+
+/* Add relative positioning to search-input-container */
+.search-input-container {
+  position: relative;
+  display: flex;
+  width: 100%;
+}
+
+/* Ensure the search form has the correct positioning context */
+.search-form {
+  width: 100%;
+  position: relative;
+}
+
+/* Style for the autocomplete items remains the same */
+.autocomplete-item {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.9rem;
+  color: #333;
+  background-color: #fff;
+  text-align: left;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+.autocomplete-item:hover {
+  background-color: #f8f9fa;
+  color: var(--accent-color);
+}
+
+/* Style for synonym matches */
+.synonym-match {
+  font-size: 0.85rem;
+  background-color: #e3f2fd !important;
+  border-color: #90caf9 !important;
+  margin-bottom: 10px !important;
+}
+
 
 /* Results Page */
 .mini-search {
@@ -917,160 +1056,43 @@ a:hover {
 }
 
 /* Drug List Page Styles */
-.druglist-header {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-  color: white;
-  padding: 3rem 1.5rem;
+.tree-container {
+  margin: 30px 0;
 }
-
-.druglist-container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.druglist-header h1 {
-  font-size: 2.5rem;
-  margin-bottom: 1rem;
-  font-weight: 700;
-  line-height: 1.2;
-  font-family: 'Merriweather', serif;
-}
-
-.druglist-header p {
-  font-size: 1.2rem;
-  margin-bottom: 2rem;
-  opacity: 0.9;
-  font-family: 'Montserrat', sans-serif;
-}
-
-.druglist-filter {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.search-input-container.compact {
-  flex: 2;
-}
-
-.category-filter {
-  flex: 1;
-}
-
-.category-filter select {
-  width: 100%;
-  padding: 14px 15px;
-  border: 1px solid var(--gray-light-color);
-  border-radius: var(--border-radius);
-  font-size: 1rem;
-  background-color: white;
+.tree-node {
   cursor: pointer;
-  font-family: 'Montserrat', sans-serif;
+  padding: 8px;
+  border-radius: 4px;
+  margin-bottom: 2px;
 }
-
-.alphabet-navigation {
-  margin: 2rem 0;
-  padding: 1rem 0;
-  border-bottom: 1px solid var(--border-color);
+.tree-node:hover {
+  background-color: #f5f5f5;
 }
-
-.alphabet-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  justify-content: center;
+.tree-node-kingdom {
+  background-color: #e3f2fd;
+  font-weight: bold;
 }
-
-.alphabet-link {
-  display: inline-block;
-  width: 36px;
-  height: 36px;
-  line-height: 36px;
-  text-align: center;
-  border-radius: 50%;
-  background-color: #f8fafc;
-  color: var(--secondary-color);
-  font-weight: 500;
-  transition: all 0.2s ease;
-  font-family: 'Poppins', sans-serif;
+.tree-node-superclass {
+  background-color: #e8f5e9;
+  margin-left: 20px;
 }
-
-.alphabet-link:hover, .alphabet-link.active {
-  background-color: var(--accent-color);
-  color: white;
-  text-decoration: none;
+.tree-node-class {
+  background-color: #fff3e0;
+  margin-left: 40px;
 }
-
-.drug-list-content {
-  padding: 2rem 0;
+.tree-node-drug {
+  margin-left: 60px;
 }
-
-.drug-list-section {
-  margin-bottom: 3rem;
+.toggle-icon {
+  margin-right: 8px;
 }
-
-.drug-list-section h2 {
-  font-size: 1.8rem;
-  color: var(--secondary-color);
-  margin-bottom: 1.5rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 2px solid var(--accent-color);
-  font-family: 'Merriweather', serif;
+.drug-count {
+  color: #666;
+  font-size: 0.9em;
+  margin-left: 8px;
 }
-
-.drug-list-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
-}
-
-.drug-item {
-  background-color: white;
-  border-radius: var(--border-radius);
-  padding: 1.5rem;
-  box-shadow: var(--shadow);
-  transition: all 0.2s ease;
-  border: 1px solid var(--border-color);
-}
-
-.drug-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-}
-
-.drug-item h3 {
-  color: var(--accent-color);
-  margin-bottom: 0.5rem;
-  font-size: 1.2rem;
-  font-family: 'Merriweather', serif;
-}
-
-.drug-category {
-  display: inline-block;
-  font-size: 0.8rem;
-  color: var(--gray-color);
-  background-color: var(--gray-light-color);
-  padding: 2px 8px;
-  border-radius: 12px;
-  margin-bottom: 0.75rem;
-}
-
-.loading-indicator {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 0;
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid rgba(107, 70, 193, 0.3);
-  border-radius: 50%;
-  border-top-color: var(--accent-color);
-  animation: spin 1s ease-in-out infinite;
-  margin-bottom: 1rem;
+.hidden {
+  display: none;
 }
 
 /* Alphabet */
@@ -1176,62 +1198,3 @@ footer {
 
 
 
-/* Update the autocomplete container positioning */
-.autocomplete-container {
-  position: absolute;
-  z-index: 1000;
-  width: 100%;
-  max-height: 300px;
-  overflow-y: auto;
-  background: white;
-  border: 1px solid #ced4da;
-  border-radius: 0 0 0.25rem 0.25rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  top: 100%; /* Position it at the bottom of the input */
-  left: 0;   /* Align with the left edge of the input */
-}
-
-/* Add relative positioning to search-input-container */
-.search-input-container {
-  position: relative;
-  display: flex;
-  width: 100%;
-}
-
-/* Ensure the search form has the correct positioning context */
-.search-form {
-  width: 100%;
-  position: relative;
-}
-
-/* Style for the autocomplete items remains the same */
-.autocomplete-item {
-  padding: 0.5rem 0.75rem;
-  cursor: pointer;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 0.9rem;
-  color: #333;
-  background-color: #fff;
-  text-align: left;
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.autocomplete-item:last-child {
-  border-bottom: none;
-}
-
-.autocomplete-item:hover {
-  background-color: #f8f9fa;
-  color: var(--accent-color);
-}
-
-/* Style for synonym matches */
-.synonym-match {
-  font-size: 0.85rem;
-  background-color: #e3f2fd !important;
-  border-color: #90caf9 !important;
-  margin-bottom: 10px !important;
-}

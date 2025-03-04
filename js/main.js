@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (searchInput) {
         initializeAutocomplete();
     }
-
     
     // Add event listener for searchForm and if it is submitted execute handleSearch
     const searchForm = document.getElementById('searchForm');
@@ -31,6 +30,44 @@ document.addEventListener('DOMContentLoaded', function() {
     const navLogout = document.getElementById('navLogout');
     if (navLogout) {
         navLogout.addEventListener('click', handleLogout);
+    }
+
+    // Set up avatar dropdown toggle
+    const userAvatar = document.getElementById('userAvatar');
+    const profileDropdown = document.getElementById('profileDropdown');
+    
+    if (userAvatar && profileDropdown) {
+        userAvatar.addEventListener('click', function(e) {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('show');
+        });
+    }
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (profileDropdown && profileDropdown.classList.contains('show')) {
+            if (!profileDropdown.contains(e.target) && e.target !== userAvatar) {
+                profileDropdown.classList.remove('show');
+            }
+        }
+    });
+
+    // Filter dropdown functionality
+    const filterTitle = document.querySelector('.filter-title');
+    const filterOptions = document.getElementById('filterOptions');
+    
+    if (filterTitle && filterOptions) {
+        // Initially hide the filter options
+        filterOptions.style.maxHeight = '0';
+        filterOptions.style.overflow = 'hidden';
+        
+        filterTitle.addEventListener('click', function() {
+            if (filterOptions.style.maxHeight === '0px') {
+                filterOptions.style.maxHeight = filterOptions.scrollHeight + 'px';
+            } else {
+                filterOptions.style.maxHeight = '0';
+            }
+        })
     }
 });
 
@@ -73,22 +110,26 @@ function updateNavigation() {
     const isLoggedIn = sessionStorage.getItem('user_id') !== null;
     // Obtain the  login, logout and username items of the html
     const navLogin = document.getElementById('navLogin');
-    const navLogout = document.getElementById('navLogout');
-    const navUsername = document.getElementById('navUsername');
-
+    const avatarContainer = document.getElementById('avatarContainer');
+    const dropdownUsername = document.getElementById('dropdownUsername');
+    
     // If they all exist
-    if (navLogin && navLogout && navUsername) {
+    if (navLogin && avatarContainer) {
         if (isLoggedIn) {
             // if isLoggedIn is true show the logout item and the username iterm
             navLogin.style.display = 'none';
-            navLogout.style.display = 'inline-block';
-            navUsername.style.display = 'inline-block';
-            navUsername.textContent = sessionStorage.getItem('username');
+            avatarContainer.style.display = 'block';
+            if (dropdownUsername) {
+                dropdownUsername.textContent = sessionStorage.getItem('username') || 'User';
+            }
+            const avatarImage = document.getElementById('avatarImage');
+            if (avatarImage) {
+                avatarImage.src = 'img/avatar.png';
+            }
         } else {
             // else show the login button and hide the others
             navLogin.style.display = 'inline-block';
-            navLogout.style.display = 'none';
-            navUsername.style.display = 'none';
+            avatarContainer.style.display = 'none';
         }
     }
 }

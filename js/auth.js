@@ -135,3 +135,142 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('logoutButton').addEventListener('click', handleLogout);
     }
 });
+
+function handleUpdateProfile(event) {
+    event.preventDefault();
+    
+    const username = document.getElementById('editUsername').value;
+    const email = document.getElementById('editEmail').value;
+    const newPassword = document.getElementById('editPassword').value;
+    const confirmPassword = document.getElementById('confirmEditPassword').value;
+    const currentPassword = document.getElementById('currentPassword').value;
+    
+    // Verify password if changing
+    if (newPassword && newPassword !== confirmPassword) {
+        showMessage('New passwords do not match', 'error');
+        return;
+    }
+    
+    if (!currentPassword) {
+        showMessage('Current password is required to update profile', 'error');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('action', 'updateProfile');
+    formData.append('user_id', sessionStorage.getItem('user_id'));
+    formData.append('username', username);
+    formData.append('email', email);
+    formData.append('currentPassword', currentPassword);
+    
+    if (newPassword) {
+        formData.append('newPassword', newPassword);
+    }
+    
+    fetch('php/profile.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Update session storage with new info
+            sessionStorage.setItem('user_id', email);
+            sessionStorage.setItem('username', username);
+            
+            showMessage('Profile updated successfully', 'success');
+            
+            // Switch back to view mode and refresh displayed info
+            switchToViewMode();
+            loadProfileInfo();
+            
+            // Update navigation to reflect changes
+            updateNavigation();
+        } else {
+            showMessage('Update failed: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        showMessage('Error: ' + error.message, 'error');
+    });
+}
+
+function loadProfileInfo() {
+    const username = sessionStorage.getItem('username');
+    const email = sessionStorage.getItem('user_id');
+    
+    if (username && email) {
+        // Update view mode displays
+        const profileUsernameElements = document.querySelectorAll('#profileUsername, #viewUsername');
+        const profileEmailElements = document.querySelectorAll('#profileEmail, #viewEmail');
+        
+        profileUsernameElements.forEach(element => {
+            if (element) element.textContent = username;
+        });
+        
+        profileEmailElements.forEach(element => {
+            if (element) element.textContent = email;
+        });
+        
+        // Populate edit form fields
+        const editUsernameField = document.getElementById('editUsername');
+        const editEmailField = document.getElementById('editEmail');
+        
+        if (editUsernameField) editUsernameField.value = username;
+        if (editEmailField) editEmailField.value = email;
+    } else {
+        // Redirect to login if not logged in
+        window.location.href = 'login.html';
+    }
+}
+
+function switchToEditMode() {
+    const viewSection = document.getElementById('profileView');
+    const editSection = document.getElementById('profileEdit');
+    
+    if (viewSection && editSection) {
+        viewSection.style.display = 'none';
+        editSection.style.display = 'block';
+    }
+}
+
+function switchToViewMode() {
+    const viewSection = document.getElementById('profileView');
+    const editSection = document.getElementById('profileEdit');
+    
+    if (viewSection && editSection) {
+        viewSection.style.display = 'block';
+        editSection.style.display = 'none';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    updateNavigation();
+
+    // Profile page specific functionality
+    if (window.location.pathname.includes('profile.html')) {
+        loadProfileInfo();
+        
+        // Setup event listeners for profile editing
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const updateProfileForm = document.getElementById('updateProfileForm');
+        const logoutButton = document.getElementById('logoutButton');
+        
+        if (editProfileBtn) {
+            editProfileBtn.addEventListener('click', switchToEditMode);
+        }
+        
+        if (cancelEditBtn) {
+            cancelEditBtn.addEventListener('click', switchToViewMode);
+        }
+        
+        if (updateProfileForm) {
+            updateProfileForm.addEventListener('submit', handleUpdateProfile);
+        }
+        
+        if (logoutButton) {
+            logoutButton.addEventListener('click', handleLogout);
+        }
+    }
+});
