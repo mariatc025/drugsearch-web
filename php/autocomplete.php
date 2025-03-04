@@ -43,20 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search'])) {
         
         $suggestions = [];
         
-        // Format suggestions based on search type
-        if ($type === 'drug') {
-            foreach ($results as $row) {
-                $suggestions[] = [
-                    'text' => $row['drug_name'],
-                    'id' => $row['drugbank_id']
-                ];
-            }
-        } else {
-            foreach ($results as $row) {
-                $suggestions[] = [
-                    'text' => $row['name']
-                ];
-            }
+        foreach ($results as $row) {
+            $suggestions[] = [
+                'text' => $row['drug_name'] ?? $row['name']
+            ];
         }
         
         echo json_encode([

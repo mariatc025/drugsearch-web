@@ -1,4 +1,4 @@
-// Add script to hide loading spinner when content is loaded
+// Add event listener to hide loading spinner when content is loaded
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
         document.getElementById('loadingSpinner').style.display = 'none';
@@ -6,7 +6,9 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 1000); // Simulating loading delay
 });
 
+// Function to loadDrugInfo
 function loadDrugInfo(drugId) {
+    // Get element drugInfo (found in drug.html) and create the container along with loading spinner
     const drugInfoContainer = document.getElementById('drugInfo');
     drugInfoContainer.innerHTML = `
         <div class="text-center p-5">
@@ -17,13 +19,14 @@ function loadDrugInfo(drugId) {
         </div>
     `;
     
-    // Update breadcrumb
+    // Obtain drugname
     const drugNameBreadcrumb = document.getElementById('drugName');
     
-    // Fetch drug basic information
+    // Fetch drug information from get_drug.php
     fetch(`php/get_drug.php?id=${drugId}`)
         .then(response => response.json())
         .then(drug => {
+            // if the drug doesn't exist or it gives an error display error screen
             if (!drug || drug.status === 'error') {
                 drugInfoContainer.innerHTML = `
                     <div class="alert alert-danger m-4">
@@ -105,7 +108,7 @@ function loadDrugInfo(drugId) {
             // Load PubChem image
             loadPubChemImage(drugId);
             
-            // Load additional information
+            // Load additional information such as side effects, manufacturers and interactions
             loadSideEffects(drugId);
             loadManufacturers(drugId);
             loadInteractions(drugId);
@@ -120,18 +123,20 @@ function loadDrugInfo(drugId) {
         });
 }
 
-
+// Function to load pubchem image
 function loadPubChemImage(drugId) {
+    // Get the drugImage container
     const container = document.getElementById('drugImageContainer');
-    
+    // Fetch the pubchem cid for that specific drug id
     fetch(`../php/get_pubchem_cid.php?id=${drugId}`)
         .then(response => response.json())
         .then(data => {
+            // If the fetching is successful modify the pubchem url with that id
             if (data.status === 'success' && data.pubchem_cid) {
                 // PubChem image URL
                 const imageUrl = `https://pubchem.ncbi.nlm.nih.gov/image/imgsrv.fcgi?cid=${data.pubchem_cid}&t=l`;
                 
-                // Create image element
+                // Add the obtained image into the container along with a caption
                 container.innerHTML = `
                     <img src="${imageUrl}" alt="Drug structure" class="drug-structure-image">
                     <p class="image-caption">Structure from PubChem</p>
@@ -146,16 +151,18 @@ function loadPubChemImage(drugId) {
 }
 
 function loadSideEffects(drugId) {
+    // Get the sideEffects container
     const container = document.getElementById('sideEffects');
-    
+    // Fetch the side effects for that specific drug id
     fetch(`../php/get_side_effects.php?id=${drugId}`)
         .then(response => response.json())
         .then(data => {
+            // if there are no side effecs display this
             if (!data || data.length === 0) {
                 container.innerHTML = '<h2>Side Effects</h2><p>No side effects information available.</p>';
                 return;
             }
-            
+            // Otherwise iterate through the side effects creating a list and display the frequency percent or the lower and upper bound
             let html = '<h2>Side Effects</h2><ul class="side-effects-list">';
             data.forEach(effect => {
                 let frequencyInfo = '';
@@ -177,16 +184,18 @@ function loadSideEffects(drugId) {
 }
 
 function loadManufacturers(drugId) {
+    // Get the manufacturers container
     const container = document.getElementById('manufacturers');
-    
+    // Fetch the manufacturers for that specific drug id
     fetch(`../php/get_manufacturers.php?id=${drugId}`)
         .then(response => response.json())
         .then(data => {
+            // if there are no manufacturers display this
             if (!data || data.length === 0) {
                 container.innerHTML = '<h2>Manufacturers</h2><p>No manufacturer information available.</p>';
                 return;
             }
-            
+            // Otherwise iterate through the manufacturers creating a list
             let html = '<h2>Manufacturers</h2><ul class="manufacturers-list">';
             data.forEach(manufacturer => {
                 html += `<li>${manufacturer.manufacturer_name}</li>`;
@@ -201,16 +210,18 @@ function loadManufacturers(drugId) {
 }
 
 function loadInteractions(drugId) {
+    // Get the interactions container
     const container = document.getElementById('interactions');
-    
+    // Fetch the interactions for that specific drug id
     fetch(`../php/get_interactions.php?id=${drugId}`)
         .then(response => response.json())
         .then(data => {
+            // if there are no interactions display this
             if (!data || data.length === 0) {
                 container.innerHTML = '<h2>Drug Interactions</h2><p>No interactions information available.</p>';
                 return;
             }
-            
+            // Otherwise iterate through the interactions creating a list alogn with link to the other drug along with a description
             let html = '<h2>Drug Interactions</h2><ul class="interactions-list">';
             data.forEach(interaction => {
                 html += `

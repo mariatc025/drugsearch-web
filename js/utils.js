@@ -1,5 +1,5 @@
 function showMessage(message, type = 'info') {
-    // Check if message container exists, create if not
+    // Create message container
     let messageContainer = document.getElementById('messageContainer');
     if (!messageContainer) {
         messageContainer = document.createElement('div');
@@ -25,12 +25,7 @@ function showMessage(message, type = 'info') {
     }, 5000);
 }
 
-function formatDate(dateString) {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString();
-}
-
+// function to truncate text for the description
 function truncateText(text, maxLength = 100) {
     if (!text) return '';
     if (text.length <= maxLength) return text;

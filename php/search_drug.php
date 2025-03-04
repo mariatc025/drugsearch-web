@@ -1,5 +1,4 @@
 <?php
-// Modify search_drug.php with this updated version
 require_once 'db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search'])) {
@@ -12,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search'])) {
         
         switch ($type) {
             case 'drug':
-                // Enhanced query to search by name, ID, and synonyms
                 $query = "SELECT DISTINCT d.* FROM Drugs d 
                          WHERE d.drug_name LIKE ? 
                          OR d.drugbank_id LIKE ? 

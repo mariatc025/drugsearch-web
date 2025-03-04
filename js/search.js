@@ -1,18 +1,25 @@
+
+// Function to handle a search
 function handleSearch(event) {
+    // Prevents the default form submission
     event.preventDefault();
+    // Obtain the searchInput and the filter option that is currently checked
     const searchInput = document.getElementById('searchInput').value;
     const searchType = document.querySelector('input[name="searchType"]:checked').value;
     
+    // Give an error if no input is provided
     if (searchInput.trim() === '') {
         showMessage('Please enter a search term', 'error');
         return;
     }
     
-    // Redirect to search results page
+    // Redirect to search results page with the input and type as URL parameters
     window.location.href = `search-results.html?search=${encodeURIComponent(searchInput)}&type=${searchType}`;
 }
 
+// Function for the autocomplete container which appears below the search bar
 function initializeAutocomplete() {
+    // Obtain the search input and create a container autocomplete-container that is initially hidden
     const searchInput = document.getElementById('searchInput');
     const autocompleteContainer = document.createElement('div');
     autocompleteContainer.className = 'autocomplete-container';
@@ -21,19 +28,21 @@ function initializeAutocomplete() {
     // Insert autocomplete container after search input
     searchInput.parentNode.insertBefore(autocompleteContainer, searchInput.nextSibling);
     
-    // Add event listeners for input changes
+    // Add event listeners for changes in the searchInput (what the user is writing)
     searchInput.addEventListener('input', function() {
+        // get the value of the input field, if it is lower than 2 characters don't show the autocomplete container
         const query = this.value.trim();
         if (query.length < 2) {
             autocompleteContainer.style.display = 'none';
             return;
         }
         
-        // Get selected search type
+        // Get checked search type
         const searchType = document.querySelector('input[name="searchType"]:checked').value;
         
-        // Fetch suggestions
+        // Request suggestions for autocomplete through the autocomplete.php file
         fetch(`php/autocomplete.php?search=${encodeURIComponent(query)}&type=${searchType}`)
+            // If the fetch is successful we obtain a response which we parse and if it is bigger than 0 we display in the autocomplete container
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'success' && data.suggestions.length > 0) {
@@ -44,20 +53,21 @@ function initializeAutocomplete() {
                     autocompleteContainer.style.display = 'none';
                 }
             })
+            // If the fetch gives an error the autocomplete container won't be displayed
             .catch(error => {
                 console.error('Autocomplete error:', error);
                 autocompleteContainer.style.display = 'none';
             });
     });
     
-    // Hide suggestions when clicking outside
+    // Hide suggestions when clicking outside of the autocomplete container
     document.addEventListener('click', function(e) {
         if (!searchInput.contains(e.target) && !autocompleteContainer.contains(e.target)) {
             autocompleteContainer.style.display = 'none';
         }
     });
     
-    // Show suggestions when input is focused if there's content
+    // Show suggestions when input is focused if there's content (even if the user is not currently writing)
     searchInput.addEventListener('focus', function() {
         if (this.value.trim().length >= 2) {
             // Trigger the input event to show suggestions
@@ -66,27 +76,29 @@ function initializeAutocomplete() {
     });
 }
 
+// Function to display the suggestions inside the autocomplete container
 function renderSuggestions(suggestions, container) {
+    // erase current text in the conteiner
     container.innerHTML = '';
-    
+    // iterate through the suggestions
     suggestions.forEach(suggestion => {
+        // create a suggestion element for each suggestion adding in the text
         const suggestionElement = document.createElement('div');
         suggestionElement.className = 'autocomplete-item';
         suggestionElement.textContent = suggestion.text;
         
-        // Add click handler
+        // Add event listener in the suggestion element that detects if it is clicked 
+        // and puts that text into searchinput and makes the container not visible
         suggestionElement.addEventListener('click', function() {
             document.getElementById('searchInput').value = suggestion.text;
-            container.style.display = 'none';
-            
-            // Optional: auto-submit the form
-            // document.getElementById('searchForm').dispatchEvent(new Event('submit'));
+            container.style.display = 'none';            
         });
-        
+        // Append the suggestion element to the container
         container.appendChild(suggestionElement);
     });
 }
 
+// Displays the results of the search fetching data from search_drug.php
 function displaySearchResults(query, type) {
     const resultsContainer = document.getElementById('searchResults');
     resultsContainer.innerHTML = `<p class="text-center"><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Searching for ${type}: "${query}"...</p>`;
@@ -205,7 +217,7 @@ function displaySearchResults(query, type) {
                     
                     resultsContainer.innerHTML = html;
                     
-                    // Add event listeners to pagination buttons
+                    // Add event listeners to clicks in the pagination buttons
                     document.querySelectorAll('.pagination .page-link').forEach(button => {
                         button.addEventListener('click', function(e) {
                             e.preventDefault();
@@ -231,8 +243,3 @@ function displaySearchResults(query, type) {
         });
 }
 
-
-function truncateText(text, maxLength) {
-    if (text.length <= maxLength) return text;
-    return text.substr(0, maxLength) + '...';
-}

@@ -1,8 +1,10 @@
 // Execute js when the HTML has been loaded
 document.addEventListener('DOMContentLoaded', function() {
+    
     // Initialize elements based on current page (URL parameters)
     initializePage();
     
+    // For element searchInput call initializeAutocomplete (to give suggestions of possible search terms)
     const searchInput = document.getElementById('searchInput');
     if (searchInput) {
         initializeAutocomplete();
@@ -32,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
         navLogout.addEventListener('click', handleLogout);
     }
 
-    // Set up avatar dropdown toggle
+    // Add event listener for userAvatar and when it is clicked show the dropdown menu (do stopPropagations to avoid the event from propagating to the document click listener)
     const userAvatar = document.getElementById('userAvatar');
     const profileDropdown = document.getElementById('profileDropdown');
     
@@ -43,8 +45,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Close dropdown when clicking outside
+    // Add event listener for the document to close the dropdown when clicking outside of it
     document.addEventListener('click', function(e) {
+        // if the dropdown is shown and if the clicked in the document is outside of the dropdown, make dropdown invisible
         if (profileDropdown && profileDropdown.classList.contains('show')) {
             if (!profileDropdown.contains(e.target) && e.target !== userAvatar) {
                 profileDropdown.classList.remove('show');
@@ -52,7 +55,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Filter dropdown functionality
+    // Add event listener to filterTitle and if it is clicked and the height of the options 
+    // is 0px (it is hidden), change the height so all the options become visible
     const filterTitle = document.querySelector('.filter-title');
     const filterOptions = document.getElementById('filterOptions');
     
@@ -93,6 +97,7 @@ function initializePage() {
     const searchType = urlParams.get('type');
     // Get parameter search from urlParams
     const searchQuery = urlParams.get('search');
+
     // If element searchQuery exists and the html contains element with id searchResults call function displaySearchResults
     // Meaning that we are in search-results.html?search=${encodeURIComponent(searchInput)}&type=${searchType} (search.js)
     if (searchQuery && document.getElementById('searchResults')) {
@@ -105,18 +110,20 @@ function initializePage() {
 
 
 function updateNavigation() {
+
     // Check if user is logged in
     // If user_id is not null isLoggedIn will be true
     const isLoggedIn = sessionStorage.getItem('user_id') !== null;
-    // Obtain the  login, logout and username items of the html
+    // Obtain the  login, avatar and username items of the document
     const navLogin = document.getElementById('navLogin');
     const avatarContainer = document.getElementById('avatarContainer');
     const dropdownUsername = document.getElementById('dropdownUsername');
     
-    // If they all exist
+    // If navLogin and avatarContainer exist
     if (navLogin && avatarContainer) {
         if (isLoggedIn) {
-            // if isLoggedIn is true show the logout item and the username iterm
+            // if isLoggedIn is true show the avatar and add the username 
+            // to the dropdown menu and the default image to the avatar
             navLogin.style.display = 'none';
             avatarContainer.style.display = 'block';
             if (dropdownUsername) {
@@ -127,7 +134,7 @@ function updateNavigation() {
                 avatarImage.src = 'img/avatar.png';
             }
         } else {
-            // else show the login button and hide the others
+            // else show the login button and hide the avatar
             navLogin.style.display = 'inline-block';
             avatarContainer.style.display = 'none';
         }
