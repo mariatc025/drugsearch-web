@@ -63,7 +63,7 @@
     </header>
 
     <main>
-        <!-- Breadcrumb navigation from search-results2.html -->
+        <!-- Breadcrumb navigation from search-results.html -->
         <nav aria-label="breadcrumb" class="bg-light py-3">
             <div class="container">
                 <ol class="breadcrumb mb-0">
@@ -75,38 +75,8 @@
         
         <section class="results-container">
             <div id="searchResults" class="search-results">
-                <div class="results-header">
-                    <h2>Search Results</h2>
-                    <p id="resultCount">Loading results...</p>
-                </div>
-                
-                <div id="resultsLoader" class="results-loader">
-                    <!-- Bootstrap-style spinner -->
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p>Searching database...</p>
-                </div>
-                
-                <div id="drugResults" class="drug-results">
-                    <!-- Results will be loaded here dynamically -->
-                </div>
-                
-                <div id="pagination" class="pagination-container">
-                    <!-- Pagination -->
-                </div>
-            </div>
-            
-            <div id="noResults" class="no-results" style="display: none;">
-                <h3>No Results Found</h3>
-                <p>We couldn't find any matches for your search. Please try:</p>
-                <ul>
-                    <li>Checking your spelling</li>
-                    <li>Using more general terms</li>
-                    <li>Trying another search category</li>
-                </ul>
-                <a href="index.html" class="btn">Back to Search</a>
-            </div>
+            <!-- Results will be loaded here through the search.js -->    
+                   
         </section>
     </main>
 
