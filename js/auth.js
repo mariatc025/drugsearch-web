@@ -1,9 +1,11 @@
+// Function to handleLogin
 function handleLogin(event) {
+    // prevent the default form submission
     event.preventDefault();
-    
+    // Obtain email and password submitted by the user
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
-    
+    // if any of them is missing show this message
     if (!email || !password) {
         showMessage('Please enter both email and password', 'error');
         return;
@@ -15,19 +17,22 @@ function handleLogin(event) {
     formData.append('email', email);
     formData.append('password', password);
     
+    // Send the login data to login.php
     fetch('php/login.php', {
         method: 'POST',
         body: formData
     })
+
     .then(response => response.json())
     .then(data => {
+        // if the response login is a succes store the data in session storage 
         if (data.status === 'success') {
             // Store user information in session storage
             sessionStorage.setItem('user_id', data.user_id || email);
             sessionStorage.setItem('username', data.username || email.split('@')[0]);
             sessionStorage.setItem('role', data.role || 'user'); // Store role
             
-            showMessage('Login successful', 'success');
+            //showMessage('Login successful', 'success');
             
             // Redirect to home page after short delay
             setTimeout(() => {
@@ -42,19 +47,23 @@ function handleLogin(event) {
     });
 }
 
+// Function to register
 function handleRegister(event) {
+    // prevent the default form submission
     event.preventDefault();
-    
+
+    // Obtain all the data submitted by the user
     const email = document.getElementById('registerEmail').value;
     const username = document.getElementById('registerUsername').value;
     const password = document.getElementById('registerPassword').value;
     const confirmPassword = document.getElementById('confirmPassword').value;
     
+    // If any of them are empty show a error message
     if (!email || !username || !password || !confirmPassword) {
         showMessage('Please fill in all fields', 'error');
         return;
     }
-    
+    // If the password is not equal to the confirm password also show an error message
     if (password !== confirmPassword) {
         showMessage('Passwords do not match', 'error');
         return;
@@ -67,15 +76,15 @@ function handleRegister(event) {
     formData.append('username', username);
     formData.append('password', password);
     
-    // Adjust the path to match your directory structure
-    const phpPath = 'php/login.php';
-    
-    fetch(phpPath, {
+    // Send the register data to login.php
+    fetch('php/login.php', {
         method: 'POST',
         body: formData
     })
+
     .then(response => response.json())
     .then(data => {
+    // if the response login is a succes show a message and redirect to login page
         if (data.status === 'success') {
             showMessage('Registration successful. You can now log in.', 'success');
             
@@ -92,13 +101,15 @@ function handleRegister(event) {
     });
 }
 
+// Function to logout
 function handleLogout(event) {
+    // prevent the default form submission
     event.preventDefault();
-    
+    // send a fetch request to logout.php 
     fetch('php/logout.php')
         .then(response => response.json())
         .then(data => {
-            // Clear session storage
+            // Clear user_id and username from session storage
             sessionStorage.removeItem('user_id');
             sessionStorage.removeItem('username');
             
@@ -117,62 +128,49 @@ function handleLogout(event) {
         });
 }
 
-
-document.addEventListener('DOMContentLoaded', function () {
-    updateNavigation();
-
-    if (window.location.pathname.includes('profile.html')) {
-        const username = sessionStorage.getItem('username');
-        const email = sessionStorage.getItem('user_id');
-
-        if (username && email) {
-            document.getElementById('profileUsername').textContent = username;
-            document.getElementById('profileEmail').textContent = email;
-        } else {
-            window.location.href = 'login.html'; 
-        }
-
-        document.getElementById('logoutButton').addEventListener('click', handleLogout);
-    }
-});
-
+// Function to update profile
 function handleUpdateProfile(event) {
+    // prevent the default form submission
     event.preventDefault();
     
+    // Obtain all the elements from the edit section
     const username = document.getElementById('editUsername').value;
     const email = document.getElementById('editEmail').value;
     const newPassword = document.getElementById('editPassword').value;
     const confirmPassword = document.getElementById('confirmEditPassword').value;
     const currentPassword = document.getElementById('currentPassword').value;
     
-    // Verify password if changing
+    // Check that confirm password is the same as newPassword
     if (newPassword && newPassword !== confirmPassword) {
         showMessage('New passwords do not match', 'error');
         return;
     }
-    
+    // If currentPassword doesn't exist show a message
     if (!currentPassword) {
         showMessage('Current password is required to update profile', 'error');
         return;
     }
-    
+
+    // Create form data
     const formData = new FormData();
     formData.append('action', 'updateProfile');
     formData.append('user_id', sessionStorage.getItem('user_id'));
     formData.append('username', username);
     formData.append('email', email);
     formData.append('currentPassword', currentPassword);
-    
+    // if there's a new password also add it to the form data
     if (newPassword) {
         formData.append('newPassword', newPassword);
     }
-    
+
+    // Send the data to profile.php
     fetch('php/profile.php', {
         method: 'POST',
         body: formData
     })
     .then(response => response.json())
     .then(data => {
+        // if the response is a success upate the session with the new data
         if (data.status === 'success') {
             // Update session storage with new info
             sessionStorage.setItem('user_id', email);
@@ -184,8 +182,7 @@ function handleUpdateProfile(event) {
             switchToViewMode();
             loadProfileInfo();
             
-            // Update navigation to reflect changes
-            updateNavigation();
+
         } else {
             showMessage('Update failed: ' + data.message, 'error');
         }
@@ -195,12 +192,15 @@ function handleUpdateProfile(event) {
     });
 }
 
+// Function to load the profile information
 function loadProfileInfo() {
+    // OBtain username and email from sessionStorage
     const username = sessionStorage.getItem('username');
     const email = sessionStorage.getItem('user_id');
     
+    // if they exist
     if (username && email) {
-        // Update view mode displays
+        // Update the elements that should contain the username and email
         const profileUsernameElements = document.querySelectorAll('#profileUsername, #viewUsername');
         const profileEmailElements = document.querySelectorAll('#profileEmail, #viewEmail');
         
@@ -212,7 +212,7 @@ function loadProfileInfo() {
             if (element) element.textContent = email;
         });
         
-        // Populate edit form fields
+        // Fill edit mode fields
         const editUsernameField = document.getElementById('editUsername');
         const editEmailField = document.getElementById('editEmail');
         
@@ -223,7 +223,7 @@ function loadProfileInfo() {
         window.location.href = 'login.html';
     }
 }
-
+// Function to switch to edit mode when called (stops displaying the viewSection and displays the editSection)
 function switchToEditMode() {
     const viewSection = document.getElementById('profileView');
     const editSection = document.getElementById('profileEdit');
@@ -234,6 +234,7 @@ function switchToEditMode() {
     }
 }
 
+// Function to switch to view mode when called (stops displaying the editSection and displays the viewSection)
 function switchToViewMode() {
     const viewSection = document.getElementById('profileView');
     const editSection = document.getElementById('profileEdit');
@@ -243,34 +244,3 @@ function switchToViewMode() {
         editSection.style.display = 'none';
     }
 }
-
-document.addEventListener('DOMContentLoaded', function () {
-    updateNavigation();
-
-    // Profile page specific functionality
-    if (window.location.pathname.includes('profile.html')) {
-        loadProfileInfo();
-        
-        // Setup event listeners for profile editing
-        const editProfileBtn = document.getElementById('editProfileBtn');
-        const cancelEditBtn = document.getElementById('cancelEditBtn');
-        const updateProfileForm = document.getElementById('updateProfileForm');
-        const logoutButton = document.getElementById('logoutButton');
-        
-        if (editProfileBtn) {
-            editProfileBtn.addEventListener('click', switchToEditMode);
-        }
-        
-        if (cancelEditBtn) {
-            cancelEditBtn.addEventListener('click', switchToViewMode);
-        }
-        
-        if (updateProfileForm) {
-            updateProfileForm.addEventListener('submit', handleUpdateProfile);
-        }
-        
-        if (logoutButton) {
-            logoutButton.addEventListener('click', handleLogout);
-        }
-    }
-});

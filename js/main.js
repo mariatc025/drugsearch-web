@@ -73,6 +73,35 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
     }
+
+    // Profile page specific functionality
+    if (window.location.pathname.includes('profile.html')) {
+        loadProfileInfo();
+        
+        // Add event listeners for profile editing buttons
+        const editProfileBtn = document.getElementById('editProfileBtn');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const updateProfileForm = document.getElementById('updateProfileForm');
+        const logoutButton = document.getElementById('logoutButton');
+        
+        if (editProfileBtn) {
+            editProfileBtn.addEventListener('click', switchToEditMode);
+        }
+        
+        if (cancelEditBtn) {
+            cancelEditBtn.addEventListener('click', switchToViewMode);
+        }
+        
+        if (updateProfileForm) {
+            updateProfileForm.addEventListener('submit', handleUpdateProfile);
+        }
+        
+        if (logoutButton) {
+            logoutButton.addEventListener('click', handleLogout);
+        }
+    }
+
+    
 });
 
 // Function for page initialization
@@ -102,6 +131,22 @@ function initializePage() {
     // Meaning that we are in search-results.html?search=${encodeURIComponent(searchInput)}&type=${searchType} (search.js)
     if (searchQuery && document.getElementById('searchResults')) {
         displaySearchResults(searchQuery, searchType);
+    }
+    // Check if we're in profile page
+    if (window.location.pathname.includes('profile.html')) {
+        // obtain username and email from the storage
+        const username = sessionStorage.getItem('username');
+        const email = sessionStorage.getItem('user_id');
+
+        if (username && email) {
+            // if they both exist display them in the profile
+            document.getElementById('profileUsername').textContent = username;
+            document.getElementById('profileEmail').textContent = email;
+        } else {
+            // else go to login page
+            window.location.href = 'login.html'; 
+        }
+
     }
     
     // Update nav based on login status

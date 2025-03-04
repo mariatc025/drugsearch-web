@@ -32,7 +32,7 @@ if ($action === 'updateProfile') {
     $newPassword = isset($_POST['newPassword']) ? $_POST['newPassword'] : '';
     
     try {
-        // Verify current password - using the correct table and column names
+        // Verify if the current password the user input is correct
         $stmt = $pdo->prepare("SELECT password_hash FROM Users WHERE idEmail = ?");
         $stmt->execute([$userId]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);

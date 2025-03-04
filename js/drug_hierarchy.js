@@ -2,7 +2,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load drug hierarchy
     loadDrugHierarchy();
     
-    // Initialize search functionality
+    // Obtain searchTree input field and add event listener for input
+    // turning to lowercase the input value and filtering the tree by that value
     const searchInput = document.getElementById('searchTree');
     if (searchInput) {
         searchInput.addEventListener('input', function() {
@@ -10,16 +11,17 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Update navigation based on login status
-    updateNavigation();
 });
 
 function loadDrugHierarchy() {
+    // Obtain treeContainer
     const treeContainer = document.getElementById('treeContainer');
     
+    // Fetch data from get_drug_hierarchy.php
     fetch('php/get_drug_hierarchy.php')
         .then(response => response.json())
         .then(data => {
+            // If there's no data or an error happens show error screen
             if (!data || data.status === 'error') {
                 treeContainer.innerHTML = `
                     <div class="alert alert-danger">
@@ -29,10 +31,10 @@ function loadDrugHierarchy() {
                 `;
                 return;
             }
-            
+            // string where we will build the hiererchical tree
             let html = '';
             
-            // Render kingdoms
+            // Iterate through the kingdoms creating clickable nodes for each and adding the total count
             data.forEach(kingdom => {
                 html += `
                     <div class="tree-node tree-node-kingdom" data-id="${kingdom.idDrug_kingdom}">
@@ -43,7 +45,7 @@ function loadDrugHierarchy() {
                     <div class="kingdom-content hidden" id="kingdom-${kingdom.idDrug_kingdom}">
                 `;
                 
-                // Render superclasses
+                // Iterates through the superclasses inside kingdom creating clickable nodes for each and adding the total count
                 kingdom.superclasses.forEach(superclass => {
                     html += `
                         <div class="tree-node tree-node-superclass" data-id="${superclass.idDrug_superclass}">
@@ -54,7 +56,7 @@ function loadDrugHierarchy() {
                         <div class="superclass-content hidden" id="superclass-${superclass.idDrug_superclass}">
                     `;
                     
-                    // Render classes
+                    // Iterates through the classes inside superclass creating clickable nodes for each and adding the total count
                     superclass.classes.forEach(drugClass => {
                         html += `
                             <div class="tree-node tree-node-class" data-id="${drugClass.idDrug_class}">
@@ -65,7 +67,7 @@ function loadDrugHierarchy() {
                             <div class="class-content hidden" id="class-${drugClass.idDrug_class}">
                         `;
                         
-                        // Render drugs
+                        // Iterates through the drugs for each class creating clickable nodes for each
                         drugClass.drugs.forEach(drug => {
                             html += `
                                 <div class="tree-node tree-node-drug" data-drug-id="${drug.idDrug}">
@@ -83,6 +85,7 @@ function loadDrugHierarchy() {
                 html += `</div>`;
             });
             
+            // Add the created HTML to the tree container
             treeContainer.innerHTML = html;
             
             // Add event listeners for expanding/collapsing nodes
@@ -98,6 +101,7 @@ function loadDrugHierarchy() {
         });
 }
 
+// Function to count the number of drugs for each kingdom
 function countDrugsInKingdom(kingdom) {
     let count = 0;
     kingdom.superclasses.forEach(superclass => {
@@ -106,6 +110,7 @@ function countDrugsInKingdom(kingdom) {
     return count;
 }
 
+// Function to count the number of drugs for each superclass
 function countDrugsInSuperclass(superclass) {
     let count = 0;
     superclass.classes.forEach(drugClass => {
@@ -115,7 +120,7 @@ function countDrugsInSuperclass(superclass) {
 }
 
 function addTreeNodeListeners() {
-    // Kingdom node listeners
+    // Add event listener for each kingdom node, when it is clicked it displays the content inside that kingdom and the arrow points down
     document.querySelectorAll('.tree-node-kingdom').forEach(node => {
         node.addEventListener('click', function() {
             const kingdomId = this.getAttribute('data-id');
@@ -125,7 +130,7 @@ function addTreeNodeListeners() {
         });
     });
     
-    // Superclass node listeners
+    // Add event listener for each superclass node, when it is clicked it displays the content inside that superclass and the arrow points down
     document.querySelectorAll('.tree-node-superclass').forEach(node => {
         node.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -136,7 +141,7 @@ function addTreeNodeListeners() {
         });
     });
     
-    // Class node listeners
+    // Add event listener for each class node, when it is clicked it displays the content inside that class and the arrow points down
     document.querySelectorAll('.tree-node-class').forEach(node => {
         node.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -149,10 +154,10 @@ function addTreeNodeListeners() {
 }
 
 function toggleNode(nodeElement, contentElement) {
-    // Toggle visibility
+    // Makes content element hidden, if it was already hidden when executing this the opposite would happen and it becomes visible
     contentElement.classList.toggle('hidden');
     
-    // Update toggle icon
+    // Update toggle icon depending if the content element is currently hidden or not 
     const toggleIcon = nodeElement.querySelector('.toggle-icon');
     if (contentElement.classList.contains('hidden')) {
         toggleIcon.textContent = '▶';
@@ -162,10 +167,12 @@ function toggleNode(nodeElement, contentElement) {
 }
 
 function filterTree(searchTerm) {
+    // if the searchTerm is empty
     if (!searchTerm) {
-        // Reset tree if search is empty
+        // Reset the tree
         document.querySelectorAll('.tree-node, .kingdom-content, .superclass-content, .class-content').forEach(elem => {
             if (elem.classList.contains('tree-node')) {
+                // Make tree-node elements visible again
                 elem.style.display = 'block';
                 // Reset toggle icons
                 const toggleIcon = elem.querySelector('.toggle-icon');
@@ -173,6 +180,7 @@ function filterTree(searchTerm) {
                     toggleIcon.textContent = '▶';
                 }
             } else {
+                // Make the other elements hidden
                 elem.classList.add('hidden');
             }
         });
@@ -184,26 +192,36 @@ function filterTree(searchTerm) {
         node.style.display = 'none';
     });
     
-    // Show drugs that match the search term
-    let matchedDrugs = document.querySelectorAll('.tree-node-drug');
-    let matchedNodes = new Set();
     
+    // Get all drug nodes
+    let matchedDrugs = document.querySelectorAll('.tree-node-drug');
+    // Create a set to keep track of the parent nodes
+    let matchedNodes = new Set();
+
+    // Match drug names
+
+    // Iterate through all matchedDrugs
     matchedDrugs.forEach(drugNode => {
+        // Convert it to lowercase
         const drugName = drugNode.textContent.toLowerCase();
+        // If the drugName includes the searchterm
         if (drugName.includes(searchTerm)) {
+            // display the drug node
             drugNode.style.display = 'block';
             
-            // Find parent class node
+            // Find parent class of the drug node
+            // Get conteiner for the class
             const classContent = drugNode.parentElement;
+            // Get the classNode
             const classNode = classContent.previousElementSibling;
             matchedNodes.add(classNode);
             
-            // Find parent superclass node
+            // Find parent superclass of the class
             const superclassContent = classContent.parentElement;
             const superclassNode = superclassContent.previousElementSibling;
             matchedNodes.add(superclassNode);
             
-            // Find parent kingdom node
+            // Find parent kingdom of the superclass
             const kingdomContent = superclassContent.parentElement;
             const kingdomNode = kingdomContent.previousElementSibling;
             matchedNodes.add(kingdomNode);
@@ -211,7 +229,9 @@ function filterTree(searchTerm) {
     });
     
     // Also match class, superclass and kingdom names
+    // Select all the nodes and iterate trough them
     document.querySelectorAll('.tree-node-class, .tree-node-superclass, .tree-node-kingdom').forEach(node => {
+        // if the node include the searchTerm add them to matcheNodes
         if (node.textContent.toLowerCase().includes(searchTerm)) {
             matchedNodes.add(node);
             
@@ -223,11 +243,12 @@ function filterTree(searchTerm) {
                     drugNode.style.display = 'block';
                 });
                 
-                // Find parent nodes
+                // Show superclass of the class
                 const superclassContent = node.parentElement;
                 const superclassNode = superclassContent.previousElementSibling;
                 matchedNodes.add(superclassNode);
                 
+                // Show kingdom of the superclass
                 const kingdomContent = superclassContent.parentElement;
                 const kingdomNode = kingdomContent.previousElementSibling;
                 matchedNodes.add(kingdomNode);
@@ -242,7 +263,7 @@ function filterTree(searchTerm) {
                     }
                 });
                 
-                // Find parent kingdom
+                // Show kingdom of the superclass
                 const kingdomContent = node.parentElement;
                 const kingdomNode = kingdomContent.previousElementSibling;
                 matchedNodes.add(kingdomNode);
