@@ -128,7 +128,7 @@ function loadPubChemImage(drugId) {
     // Get the drugImage container
     const container = document.getElementById('drugImageContainer');
     // Fetch the pubchem cid for that specific drug id
-    fetch(`../php/get_pubchem_cid.php?id=${drugId}`)
+    fetch(`php/get_pubchem_cid.php?id=${drugId}`)
         .then(response => response.json())
         .then(data => {
             // If the fetching is successful modify the pubchem url with that id
@@ -154,7 +154,7 @@ function loadSideEffects(drugId) {
     // Get the sideEffects container
     const container = document.getElementById('sideEffects');
     // Fetch the side effects for that specific drug id
-    fetch(`../php/get_side_effects.php?id=${drugId}`)
+    fetch(`php/get_side_effects.php?id=${drugId}`)
         .then(response => response.json())
         .then(data => {
             // if there are no side effecs display this
@@ -187,7 +187,7 @@ function loadManufacturers(drugId) {
     // Get the manufacturers container
     const container = document.getElementById('manufacturers');
     // Fetch the manufacturers for that specific drug id
-    fetch(`../php/get_manufacturers.php?id=${drugId}`)
+    fetch(`php/get_manufacturers.php?id=${drugId}`)
         .then(response => response.json())
         .then(data => {
             // if there are no manufacturers display this
@@ -213,7 +213,7 @@ function loadInteractions(drugId) {
     // Get the interactions container
     const container = document.getElementById('interactions');
     // Fetch the interactions for that specific drug id
-    fetch(`../php/get_interactions.php?id=${drugId}`)
+    fetch(`php/get_interactions.php?id=${drugId}`)
         .then(response => response.json())
         .then(data => {
             // if there are no interactions display this
