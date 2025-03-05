@@ -39,11 +39,10 @@
     </header>
 
     <main>
-        <!-- Breadcrumb navigation from search-results2.html -->
         <nav aria-label="breadcrumb" class="bg-light py-3">
             <div class="container">
                 <ol class="breadcrumb mb-0">
-                    <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item"><a href="index.html">Home</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Interactions</li>
                 </ol>
             </div>
@@ -59,17 +58,21 @@
                         <div class="drug-selection">
                             <div class="form-group">
                                 <label for="drug1">First Medication</label>
-                                <input type="text" id="drug1" name="drug1" class="form-control" placeholder="Enter medication name" required>
+                                <div class="search-input-container"> 
+                                    <input type="text" id="drug1" name="drug1" class="form-control" placeholder="Enter medication name" required>
+                                </div>
                             </div>
-        
+                            
                             <div class="form-group">
                                 <label for="drug2">Second Medication</label>
-                                <input type="text" id="drug2" name="drug2" class="form-control" placeholder="Enter medication name" required>
+                                <div class="search-input-container"> 
+                                    <input type="text" id="drug2" name="drug2" class="form-control" placeholder="Enter medication name" required>
+                                </div>
                             </div>
         
                             <div id="additionalDrugs"></div>
         
-                            <button type="button" id="addDrugBtn" class="btn-secondary add-drug-btn">+ Add Another Medication</button>
+                            <button type="button" id="addDrugBtn" class="btn-secondary add-drug-btn"> + Add Another Medication</button>
                         </div>
     
                         <button type="submit" class="btn check-interaction-btn">Check Interactions</button>
@@ -78,7 +81,6 @@
             </div>
             
             <div id="interactionResults" class="interaction-results">
-                <!-- Results loading spinner (from search-results2.html) -->
                 <div class="text-center py-3" id="interactionLoader" style="display: none;">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>

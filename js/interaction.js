@@ -14,6 +14,86 @@ function initializeInteractionPage() {
     if (addDrugBtn) {
         addDrugBtn.addEventListener('click', addDrugField);
     }
+    
+    // Initialize autocomplete for initial drug inputs
+    initializeDrugAutocomplete('drug1');
+    initializeDrugAutocomplete('drug2');
+}
+
+function initializeDrugAutocomplete(inputId) {
+    const drugInput = document.getElementById(inputId);
+    if (!drugInput) return;
+
+    // Create autocomplete container
+    const autocompleteContainer = document.createElement('div');
+    autocompleteContainer.className = 'autocomplete-container';
+    autocompleteContainer.style.display = 'none';
+    
+   // Insert autocomplete container after the input's container
+    drugInput.closest('.search-input-container').appendChild(autocompleteContainer);
+
+    // Add event listeners for changes in the input
+    drugInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        if (query.length < 2) {
+            autocompleteContainer.style.display = 'none';
+            return;
+        }
+        
+        // Request suggestions through autocomplete.php
+        fetch(`php/autocomplete.php?search=${encodeURIComponent(query)}&type=drug`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success' && data.suggestions.length > 0) {
+                    // Display suggestions
+                    renderDrugSuggestions(data.suggestions, autocompleteContainer, drugInput);
+                    autocompleteContainer.style.display = 'block';
+                } else {
+                    autocompleteContainer.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Autocomplete error:', error);
+                autocompleteContainer.style.display = 'none';
+            });
+    });
+    
+    // Hide suggestions when clicking outside of the autocomplete container
+    document.addEventListener('click', function(e) {
+        if (!drugInput.contains(e.target) && !autocompleteContainer.contains(e.target)) {
+            autocompleteContainer.style.display = 'none';
+        }
+    });
+    
+    // Show suggestions when input is focused if there's content
+    drugInput.addEventListener('focus', function() {
+        if (this.value.trim().length >= 2) {
+            // Trigger the input event to show suggestions
+            this.dispatchEvent(new Event('input'));
+        }
+    });
+}
+
+function renderDrugSuggestions(suggestions, container, inputElement) {
+    // Clear current text in the container
+    container.innerHTML = '';
+    
+    // Iterate through the suggestions
+    suggestions.forEach(suggestion => {
+        // Create a suggestion element for each suggestion
+        const suggestionElement = document.createElement('div');
+        suggestionElement.className = 'autocomplete-item';
+        suggestionElement.textContent = suggestion.text;
+        
+        // Add event listener to set the input value when clicked
+        suggestionElement.addEventListener('click', function() {
+            inputElement.value = suggestion.text;
+            container.style.display = 'none';            
+        });
+        
+        // Append the suggestion element to the container
+        container.appendChild(suggestionElement);
+    });
 }
 
 function addDrugField() {
@@ -25,14 +105,14 @@ function addDrugField() {
     newDrugField.innerHTML = `
         <div class="drug-field-wrapper">
             <label for="drug${drugCount}">Additional Medication</label>
-            <div class="input-with-button">
+            <div class="search-input-container">
                 <input type="text" 
                      id="drug${drugCount}" 
                      name="drug${drugCount}" 
                      class="form-control" 
                      placeholder="Enter medication name" 
                      required>
-                <button type="button" class="btn-remove-drug" title="Remove this medication">&times;</button>
+                <button type="button" class="btn-secondary btn-remove-drug" title="Remove this medication">&times;</button>
             </div>
         </div>
     `;
@@ -44,6 +124,10 @@ function addDrugField() {
     removeButton.addEventListener('click', function() {
         additionalDrugsContainer.removeChild(newDrugField);
     });
+
+    // Initialize autocomplete for the new drug input
+    initializeDrugAutocomplete(`drug${drugCount}`);
+    
     
     // Focus on the new input
     newDrugField.querySelector('input').focus();
@@ -51,6 +135,15 @@ function addDrugField() {
 
 function handleInteractionCheck(event) {
     event.preventDefault();
+    
+    // Get references to key elements ONCE
+    const resultsContainer = document.getElementById('interactionResults');
+    const loader = document.getElementById('interactionLoader');
+    
+    // Clear any previous results
+    if (resultsContainer) {
+        resultsContainer.innerHTML = '';
+    }
     
     // Get all drug inputs with name starting with "drug"
     const drugInputs = document.querySelectorAll('.drug-selection input[name^="drug"]');
@@ -69,14 +162,18 @@ function handleInteractionCheck(event) {
     
     // Validate minimum 2 drugs
     if (validDrugs.length < 2) {
-        showMessage('Please enter at least two valid medications', 'error');
+        if (typeof showMessage === 'function') {
+            showMessage('Please enter at least two valid medications', 'error');
+        } else {
+            alert('Please enter at least two valid medications');
+        }
         return;
     }
     
     // Show loading indicator
-    const loader = document.getElementById('interactionLoader');
-    const resultsContainer = document.getElementById('interactionResults');
-    loader.style.display = 'block';
+    if (loader) {
+        loader.style.display = 'block';
+    }
     
     // Prepare form data
     const formData = new URLSearchParams();
@@ -92,26 +189,59 @@ function handleInteractionCheck(event) {
         },
         body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+        // Check if response is ok
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
     .then(data => {
-        loader.style.display = 'none';
-        displayInteractionResults(data, validDrugs);
+        // Hide loader
+        if (loader) {
+            loader.style.display = 'none';
+        }
+        
+        // Validate data structure
+        if (!data) {
+            throw new Error('No data received from server');
+        }
+        
+        if (data.status === 'error') {
+            throw new Error(data.message || 'Unknown error occurred');
+        }
+        
+        if (!Array.isArray(data.interactions)) {
+            throw new Error('Invalid interactions data');
+        }
+        
+        // Display results
+        if (resultsContainer) {
+            displayInteractionResults(data, validDrugs);
+        }
     })
     .catch(error => {
-        loader.style.display = 'none';
-        console.error('Error:', error);
-        resultsContainer.innerHTML = `
-            <div class="alert alert-danger">
-                <h4>Error!</h4>
-                <p>Failed to check interactions. Details: ${error.message}</p>
-            </div>
-        `;
+        // Hide loader
+        if (loader) {
+            loader.style.display = 'none';
+        }
+        
+        if (resultsContainer) {
+            resultsContainer.innerHTML = `
+                <div class="alert alert-danger">
+                    <h4>Error!</h4>
+                    <p>Failed to check interactions. ${error.message}</p>
+                </div>
+            `;
+        } else {
+            alert(`Failed to check interactions: ${error.message}`);
+        }
     });
 }
 
 function displayInteractionResults(data, drugs) {
     const resultsContainer = document.getElementById('interactionResults');
-    
+    resultsContainer.classList.add('has-results');
     // Handle errors
     if (data.status === 'error') {
         resultsContainer.innerHTML = `
@@ -160,16 +290,11 @@ function displayInteractionResults(data, drugs) {
             <div class="accordion-item">
                 <h2 class="accordion-header" id="heading${index}">
                     <button class="accordion-button ${index > 0 ? 'collapsed' : ''}" 
-                          type="button" 
-                          data-bs-toggle="collapse" 
-                          data-bs-target="#collapse${index}">
-                        ${interaction.drug1_id ? `Drug ID ${interaction.drug1_id}` : interaction.drug1} 
-                        + 
-                        ${interaction.drug2_id ? `Drug ID ${interaction.drug2_id}` : interaction.drug2}
-                        ${interaction.severity ? `
-                        <span class="severity-badge">
-                            ${interaction.severity}
-                        </span>` : ''}
+                        type="button" 
+                        data-bs-toggle="collapse" 
+                        data-bs-target="#collapse${index}">
+                        ${interaction.drug1_name} + ${interaction.drug2_name}
+                        
                     </button>
                 </h2>
                 <div id="collapse${index}" class="accordion-collapse collapse ${index === 0 ? 'show' : ''}">
@@ -178,11 +303,6 @@ function displayInteractionResults(data, drugs) {
                         <div class="interaction-description">
                             <h5>Description</h5>
                             <p>${interaction.description}</p>
-                        </div>` : ''}
-                        ${interaction.management ? `
-                        <div class="interaction-management">
-                            <h5>Management</h5>
-                            <p>${interaction.management}</p>
                         </div>` : ''}
                     </div>
                 </div>

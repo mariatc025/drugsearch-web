@@ -1,19 +1,17 @@
 /* Global Styles */
 :root {
-  --primary-color: #4a5568; /* Dark slate gray */
-  --secondary-color: #1a202c; /* Darker slate for depth */
+  --primary-color: #4a5568;
+  --secondary-color: #1a202c;
   --accent-color: #73839E; 
-  --light-accent: #9f7aea; /* Lighter purple */
   --light-color: #f8fafc;
   --dark-color: #1e293b;
-  --success-color: #047857; /* Deeper green */
-  --error-color: #b91c1c; /* Deeper red */
   --gray-color: #4b5563;
   --gray-light-color: #e2e8f0;
-  --shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   --border-radius: 8px;
   --border-color: #e2e8f0;
-  --hover-color: #f1f5f9;
+  --hovering-color: #3f5275;
+  --success-color: #047857;
+  --error-color: #b91c1c; 
 }
 
 * {
@@ -22,10 +20,14 @@
   box-sizing: border-box;
 }
 
+html, body {
+  overscroll-behavior-y: none;
+  overflow-y: scroll;
+}
+
 body {
   font-family: 'Montserrat', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1.6;
-  color: var(--dark-color);
   background-color: var(--light-color);
 }
 
@@ -45,7 +47,7 @@ a {
 }
 
 a:hover {
-  color: var(--light-accent);
+  color: var(--hovering-color);
 }
 
 .btn {
@@ -64,31 +66,33 @@ a:hover {
   font-family: 'Poppins', sans-serif;
 }
 
+
 .btn:hover {
-  background-color: #553c9a; /* Darker purple on hover */
+  background-color: var(--hovering-color);
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(107, 70, 193, 0.3);
   text-decoration: none;
+  color: white;
 }
 
 .btn-secondary {
-  background-color: var(--gray-color);
+  background-color: var(--hovering-color);
+  color: white;
   box-shadow: 0 2px 4px rgba(75, 85, 99, 0.2);
 }
 
 .btn-secondary:hover {
-  background-color: #374151; /* Darker gray on hover */
+  background-color: #374151;
   box-shadow: 0 4px 8px rgba(75, 85, 99, 0.3);
 }
 
-/* Navigation */
+/* --------------- Navigation bar section --------------- */
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2.5rem;
   background-color: white;
-  color: var(--secondary-color);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   position: sticky;
   top: 0;
@@ -102,10 +106,6 @@ a:hover {
   margin: 0;
   font-family: 'Merriweather', serif;
   letter-spacing: -0.5px;
-}
-
-.logo a {
-  text-decoration: none;
 }
 
 .nav-links {
@@ -141,7 +141,7 @@ a:hover {
 }
 
 .nav-links a#navLogin {
-  margin-left: 5rem;
+  margin-left: 1rem;
   font-size: 0.9rem;
   color: white;
   background-color: #73839E;
@@ -152,28 +152,11 @@ a:hover {
   display: inline-block; 
 }
 
-.nav-links a#navLogout {
-  font-size: 0.9rem;
-  color: white;
-  background-color: #73839E;
-  padding: 0.5rem 1rem;  
-  border: 2px solid white;  
-  border-radius: 10px;  
-  text-decoration: none;
-  display: inline-block; 
+.nav-links a#navLogin:hover {
+  background-color: var(--hovering-color);
 }
 
-.nav-links a#navUsername {
-  font-size: 1.25rem;
-  color: #73839E; 
-}
-
-
-.nav.nav-tabs .nav-item {
-  flex: 1; 
-}
-
-/* Profile avatar styles */
+/* Profile avatar */
 .avatar-container {
   position: relative;
   margin-left: 1rem;
@@ -210,8 +193,8 @@ a:hover {
   right: 0;
   width: 200px;
   background-color: white;
-  border-radius: 8px;
-  box-shadow: var(--shadow);
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   padding: 0.5rem 0;
   z-index: 200;
   display: none;
@@ -237,21 +220,22 @@ a:hover {
 }
 
 .dropdown-item:hover {
-  background-color: var(--hover-color);
-  color: var(--accent-color);
+  background-color: var(--hovering-color);
+  color: white !important;
 }
 
 .username-display {
-  padding: 0.75rem 0.75rem; /* Matching reduced padding */
+  padding: 0.75rem 0.75rem;
   font-weight: 600;
   color: var(--secondary-color);
   border-bottom: 1px solid var(--gray-light-color);
   font-size: 0.95rem;
   width: 100%;
   box-sizing: border-box;
+  text-align: center;
 }
 
-/* Hero Section */
+/* --------------- Hero Section --------------- */
 .hero {
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   color: white;
@@ -289,7 +273,7 @@ a:hover {
   display: flex;
   background-color: white;
   border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   overflow: hidden;
 }
 
@@ -415,7 +399,7 @@ a:hover {
 }
 
 .search-btn:hover {
-  background-color: #A2B9E0;
+  background-color: var(--hovering-color);
 }
 
 /* Features Section */
@@ -436,7 +420,7 @@ a:hover {
   background-color: white;
   padding: 2rem;
   border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   transition: all 0.3s ease;
   border: 1px solid var(--border-color);
 }
@@ -473,7 +457,7 @@ a:hover {
   font-family: 'Montserrat', sans-serif;
 }
 
-/* Autocomplete container positioning */
+/* Autocomplete container */
 .autocomplete-container {
   position: absolute;
   z-index: 1000;
@@ -488,20 +472,17 @@ a:hover {
   left: 0;   
 }
 
-/* Add relative positioning to search-input-container */
 .search-input-container {
   position: relative;
   display: flex;
   width: 100%;
 }
 
-/* Ensure the search form has the correct positioning context */
 .search-form {
   width: 100%;
   position: relative;
 }
 
-/* Style for the autocomplete items remains the same */
 .autocomplete-item {
   padding: 0.5rem 0.75rem;
   cursor: pointer;
@@ -534,7 +515,7 @@ a:hover {
 }
 
 
-/* Results Page */
+/* --------------- Results Page --------------- */
 .mini-search {
   background-color: #f8fafc;
   padding: 1.5rem 0;
@@ -591,7 +572,7 @@ a:hover {
   background-color: white;
   padding: 1.8rem;
   border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   border: 1px solid var(--border-color);
   transition: all 0.2s ease;
 }
@@ -615,18 +596,33 @@ a:hover {
   font-family: 'Montserrat', sans-serif;
 }
 
-/* Drug Information Page */
-.breadcrumbs {
-  padding: 1rem 2.5rem;
-  background-color: #f8fafc;
-  border-bottom: 1px solid var(--border-color);
-  font-size: 0.9rem;
-  color: var(--gray-color);
-  font-family: 'Montserrat', sans-serif;
+
+/* Pagination */
+.pagination-container {
+  margin-top: 2rem;
+  padding: 1rem 0;
+  border-top: 1px solid #ddd;
 }
 
-.breadcrumbs a {
-  color: var(--accent-color);
+.page-button {
+  margin: 0 5px;
+  padding: 8px 12px;
+  border: 1px solid #007bff;
+  background-color: white;
+  color: #007bff;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.page-button.active {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+}
+
+/* --------------- Drug Information Page --------------- */
+.breadcrumb {
+  font-family: 'Montserrat', sans-serif;
 }
 
 .drug-container {
@@ -639,7 +635,7 @@ a:hover {
   background-color: white;
   padding: 2.5rem;
   border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   margin-bottom: 2.5rem;
   border: 1px solid var(--border-color);
   display: grid;
@@ -751,7 +747,7 @@ a:hover {
   justify-content: center;
 }
 
-/* Authentication Pages */
+/*  --------------- Authentication Pages --------------- */
 .auth-container {
   display: flex;
   justify-content: center;
@@ -765,7 +761,7 @@ a:hover {
   width: 100%;
   background-color: white;
   border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   overflow: hidden;
   border: 1px solid var(--border-color);
   padding: 0;
@@ -852,7 +848,7 @@ a:hover {
   background-color: #553c9a;
 }
 
-/* Messages */
+/* --------------- Messages --------------- */
 .message-container {
   position: fixed;
   top: 20px;
@@ -865,7 +861,7 @@ a:hover {
   padding: 15px 20px;
   margin-bottom: 10px;
   border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   animation: slide-in 0.3s ease;
   display: flex;
   align-items: center;
@@ -905,7 +901,7 @@ a:hover {
     to { transform: rotate(360deg); }
 }
 
-/* Interaction Page Styles */
+/* --------------- Interaction Page --------------- */
 .interaction-container {
   max-width: 1000px;
   margin: 0 auto;
@@ -915,7 +911,7 @@ a:hover {
 .interaction-panel {
   background-color: white;
   border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   padding: 2.5rem;
   margin-bottom: 3rem;
   border: 1px solid var(--border-color);
@@ -957,6 +953,7 @@ a:hover {
   margin-top: 0.5rem;
   font-size: 0.9rem;
   padding: 8px 16px;
+  margin-left: auto;
 }
 
 .check-interaction-btn {
@@ -966,32 +963,26 @@ a:hover {
 }
 
 .interaction-results {
+  display: none; 
+ }
+
+ .interaction-results.has-results {
+  display: block;
   margin-bottom: 3rem;
-}
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  padding: 2.5rem;
+  border: 1px solid var(--border-color);
+ }
 
 .interaction-result-card {
   background-color: white;
   border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   padding: 1.5rem;
   margin-bottom: 1.5rem;
   border-left: 4px solid;
-}
-
-.interaction-result-card.severe {
-  border-left-color: #e53e3e;
-}
-
-.interaction-result-card.moderate {
-  border-left-color: #ed8936;
-}
-
-.interaction-result-card.mild {
-  border-left-color: #ecc94b;
-}
-
-.interaction-result-card.none {
-  border-left-color: #48bb78;
 }
 
 .interaction-result-card h3 {
@@ -1001,39 +992,10 @@ a:hover {
   margin-bottom: 1rem;
 }
 
-.interaction-severity {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.severity-severe {
-  background-color: #fed7d7;
-  color: #c53030;
-}
-
-.severity-moderate {
-  background-color: #feebc8;
-  color: #c05621;
-}
-
-.severity-mild {
-  background-color: #fefcbf;
-  color: #b7791f;
-}
-
-.severity-none {
-  background-color: #c6f6d5;
-  color: #2f855a;
-}
-
 .interaction-info {
   background-color: white;
   border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   padding: 2.5rem;
   border: 1px solid var(--border-color);
 }
@@ -1055,7 +1017,37 @@ a:hover {
   margin-bottom: 0.5rem;
 }
 
-/* Drug List Page Styles */
+
+/* --------------- Druglist Page ---------------*/
+.drug-hierarchy-panel {
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  padding: 2.5rem;
+  margin-bottom: 3rem;
+  border: 1px solid var(--border-color);
+}
+
+.drug-hierarchy-panel h1 {
+  color: var(--secondary-color);
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  font-weight: 700;
+  font-family: 'Merriweather', serif;
+}
+
+.drug-hierarchy-intro {
+  color: var(--gray-color);
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.drug-hierarchy-search-box {
+  max-width: 800px;
+  margin: 0 auto 2rem;
+}
+
+/* Drug List tree */
 .tree-container {
   margin: 30px 0;
 }
@@ -1095,61 +1087,7 @@ a:hover {
   display: none;
 }
 
-/* Alphabet */
-.alphabet-navigation {
-    overflow-x: auto;
-    padding: 1rem 0;
-}
-
-.alphabet-links {
-    display: flex;
-    gap: 0.5rem;
-    min-width: max-content;
-}
-
-.alphabet-link {
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    background: #f8f9fa;
-    color: #333;
-}
-
-.alphabet-link.active {
-    background: #007bff;
-    color: white;
-}
-
-/* Pagination */
-.pagination-container {
-    margin-top: 2rem;
-    padding: 1rem 0;
-    border-top: 1px solid #ddd;
-}
-
-.page-button {
-    margin: 0 5px;
-    padding: 8px 12px;
-    border: 1px solid #007bff;
-    background-color: white;
-    color: #007bff;
-    cursor: pointer;
-    border-radius: 5px;
-}
-
-.page-button.active {
-    background-color: #007bff;
-    color: white;
-    font-weight: bold;
-}
-
-/* Druglist */
-.drug-items {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-}
-
-/* Footer */
+/* --------------- Footer ---------------*/
 footer {
   text-align: center;
   padding: 2rem;
