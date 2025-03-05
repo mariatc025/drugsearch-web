@@ -131,11 +131,14 @@ function displaySearchResults(query, type) {
                     const startIndex = (pageNumber - 1) * itemsPerPage;
                     const endIndex = Math.min(startIndex + itemsPerPage, data.drugs.length);
                     const currentPageDrugs = data.drugs.slice(startIndex, endIndex);
-                    
+                    // Modify the type for better readability
+                    const formattedType = type.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+                    let resultText = data.drugs.length === 1 ? '1 result' : `${data.drugs.length} results`;
+
                     let html = `
                         <div class="d-flex align-items-center justify-content-between mb-4">
-                            <h2 class="mb-0">Search Results for ${type}: "${query}"</h2>
-                            <span class="badge bg-primary">${data.drugs.length} results</span>
+                            <h2 class="mb-0">Search Results for ${formattedType}: "${query}"</h2>
+                            <span class="badge" style="background-color: #3f5275;">${resultText}</span>
                         </div>
                         <div class="row">
                     `;
