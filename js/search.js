@@ -1,4 +1,3 @@
-
 // Function to handle a search
 function handleSearch(event) {
     // Prevents the default form submission
@@ -16,7 +15,6 @@ function handleSearch(event) {
     // Redirect to search results page with the input and type as URL parameters
     window.location.href = `search-results.html?search=${encodeURIComponent(searchInput)}&type=${searchType}`;
 }
-
 // Function for the autocomplete container which appears below the search bar
 function initializeAutocomplete() {
     // Obtain the search input and create a container autocomplete-container that is initially hidden
@@ -75,7 +73,6 @@ function initializeAutocomplete() {
         }
     });
 }
-
 // Function to display the suggestions inside the autocomplete container
 function renderSuggestions(suggestions, container) {
     // erase current text in the conteiner
@@ -97,7 +94,6 @@ function renderSuggestions(suggestions, container) {
         container.appendChild(suggestionElement);
     });
 }
-
 // Displays the results of the search fetching data from search_drug.php
 function displaySearchResults(query, type) {
     const resultsContainer = document.getElementById('searchResults');
@@ -134,11 +130,10 @@ function displaySearchResults(query, type) {
                     // Modify the type for better readability
                     const formattedType = type.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
                     let resultText = data.drugs.length === 1 ? '1 result' : `${data.drugs.length} results`;
-
                     let html = `
                         <div class="d-flex align-items-center justify-content-between mb-4">
                             <h2 class="mb-0">Search Results for ${formattedType}: "${query}"</h2>
-                            <span class="badge" style="background-color: #3f5275;">${resultText}</span>
+                            <span class="badge" style="background-color: #73839E;">${resultText}</span>
                         </div>
                         <div class="row">
                     `;
@@ -149,7 +144,7 @@ function displaySearchResults(query, type) {
                         const hasPubChemImage = drug.pubchem_cid ? true : false;
                         const imageHtml = hasPubChemImage ? 
                             `<img src="https://pubchem.ncbi.nlm.nih.gov/image/imgsrv.fcgi?cid=${drug.pubchem_cid}&t=s" alt="${drug.drug_name}" class="drug-thumbnail">` : 
-                            `<div class="no-image-placeholder">No structure image available</div>`;
+                            `<div class="no-image">No structure image available</div>`;
                         
                         // Show synonym match if applicable
                         const synonymMatch = drug.matched_synonym ? 
@@ -191,14 +186,20 @@ function displaySearchResults(query, type) {
                                     </li>
                         `;
                         
-                        // Generate page number buttons
-                        for (let i = 1; i <= totalPages; i++) {
-                            html += `
-                                <li class="page-item ${i === pageNumber ? 'active' : ''}">
-                                    <a class="page-link" href="#" data-page="${i}">${i}</a>
-                                </li>
-                            `;
-                        }
+                        // Generate page number buttons with improved display logic
+                        const displayPages = getPageNumbersToDisplay(pageNumber, totalPages);
+                        
+                        displayPages.forEach(i => {
+                            if (i === '...') {
+                                html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+                            } else {
+                                html += `
+                                    <li class="page-item ${i === pageNumber ? 'active' : ''}">
+                                        <a class="page-link" href="#" data-page="${i}">${i}</a>
+                                    </li>
+                                `;
+                            }
+                        });
                         
                         html += `
                                     <li class="page-item ${pageNumber === totalPages ? 'disabled' : ''}">
@@ -235,6 +236,45 @@ function displaySearchResults(query, type) {
                     });
                 }
                 
+                // Helper function to determine which page numbers to display
+                function getPageNumbersToDisplay(currentPage, totalPages) {
+                    let displayPages = [];
+                    
+                    // Always show first page
+                    displayPages.push(1);
+                    
+                    // For small number of pages, show all
+                    if (totalPages <= 7) {
+                        for (let i = 2; i < totalPages; i++) {
+                            displayPages.push(i);
+                        }
+                    } else {
+                        // For larger number of pages, show smart pagination
+                        if (currentPage > 3) {
+                            displayPages.push('...');
+                        }
+                        
+                        // Show pages around current page
+                        const startPage = Math.max(2, currentPage - 1);
+                        const endPage = Math.min(totalPages - 1, currentPage + 1);
+                        
+                        for (let i = startPage; i <= endPage; i++) {
+                            displayPages.push(i);
+                        }
+                        
+                        if (currentPage < totalPages - 2) {
+                            displayPages.push('...');
+                        }
+                    }
+                    
+                    // Always show last page if there is more than one page
+                    if (totalPages > 1) {
+                        displayPages.push(totalPages);
+                    }
+                    
+                    return displayPages;
+                }
+                
                 // Initial page render
                 renderPage(currentPage);
             } else {
@@ -244,5 +284,14 @@ function displaySearchResults(query, type) {
         .catch(error => {
             showMessage('Error: ' + error.message, 'error');
         });
+}
+
+function truncateText(text, maxLength) {
+    if (text.length >= maxLength) {
+        return text.substring(0, maxLength); 
+    }
+
+    const padding = ' '.repeat(maxLength - text.length); 
+    return text + padding; 
 }
 
