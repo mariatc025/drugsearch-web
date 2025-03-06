@@ -83,6 +83,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const cancelEditBtn = document.getElementById('cancelEditBtn');
         const updateProfileForm = document.getElementById('updateProfileForm');
         const logoutButton = document.getElementById('logoutButton');
+        const deleteAccountButton = document.getElementById('deleteAccountButton');
+        const confirmDeleteAccountBtn = document.getElementById('confirmDeleteAccountBtn');
+        const deleteAccountDialog = new bootstrap.Modal(document.getElementById('deleteAccountDialog'));
+
         
         if (editProfileBtn) {
             editProfileBtn.addEventListener('click', switchToEditMode);
@@ -99,6 +103,25 @@ document.addEventListener('DOMContentLoaded', function() {
         if (logoutButton) {
             logoutButton.addEventListener('click', handleLogout);
         }
+        if (deleteAccountButton) {
+            deleteAccountButton.addEventListener('click', () => {
+                deleteAccountDialog.show();
+            });
+        }
+    
+        if (confirmDeleteAccountBtn) {
+            confirmDeleteAccountBtn.addEventListener('click', () => {
+                handleDeleteAccount(event);
+                deleteAccountDialog.hide();
+            });
+        }
+
+    }
+
+    // Add event listener for adminRequestForm and if it is submitted execute handleAdminRequest
+    const adminRequestForm = document.getElementById('adminRequestForm');
+    if (adminRequestForm) {
+        adminRequestForm.addEventListener('submit', handleAdminRequest);
     }
 
     
@@ -142,13 +165,20 @@ function initializePage() {
             // if they both exist display them in the profile
             document.getElementById('profileUsername').textContent = username;
             document.getElementById('profileEmail').textContent = email;
+            
+            // Hide admin request section if user is already an admin
+            const userRole = sessionStorage.getItem('role');
+            const adminRequestSection = document.getElementById('adminRequestSection');
+            if (adminRequestSection && userRole === 'Admin') {
+                adminRequestSection.style.display = 'none';
+            }
         } else {
             // else go to login page
             window.location.href = 'login.html'; 
         }
 
     }
-    
+
     // Update nav based on login status
     updateNavigation();
 }
@@ -159,11 +189,14 @@ function updateNavigation() {
     // Check if user is logged in
     // If user_id is not null isLoggedIn will be true
     const isLoggedIn = sessionStorage.getItem('user_id') !== null;
-    // Obtain the  login, avatar and username items of the document
+    // Obtain the  login, avatar, role, image, username and admin items of the document
     const navLogin = document.getElementById('navLogin');
     const avatarContainer = document.getElementById('avatarContainer');
     const dropdownUsername = document.getElementById('dropdownUsername');
-    
+    const avatarImage = document.getElementById('avatarImage');
+    const userRole = sessionStorage.getItem('role');
+    const adminMenuItems = document.querySelectorAll('.admin-only');
+
     // If navLogin and avatarContainer exist
     if (navLogin && avatarContainer) {
         if (isLoggedIn) {
@@ -174,7 +207,13 @@ function updateNavigation() {
             if (dropdownUsername) {
                 dropdownUsername.textContent = sessionStorage.getItem('username') || 'User';
             }
-            const avatarImage = document.getElementById('avatarImage');
+            adminMenuItems.forEach(item => {
+                if (userRole === 'Admin') {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
             if (avatarImage) {
                 avatarImage.src = 'img/avatar.png';
             }

@@ -14,8 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         // Start transaction
         $pdo->beginTransaction();
         
-        // Default role ID (e.g., 1 for "user")
-        $defaultRoleId = 800001;
+        // Default role ID (2 for User)
+        $defaultRoleId = 800002;
         
         // Insert user with default role
         $stmt = $pdo->prepare("INSERT INTO Users (idEmail, idRole, username, password_hash, created_at) VALUES (?, ?, ?, ?, NOW())");

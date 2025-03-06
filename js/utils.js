@@ -31,3 +31,10 @@ function truncateText(text, maxLength = 100) {
     if (text.length <= maxLength) return text;
     return text.substring(0, maxLength) + '...';
 }
+
+
+// Close the login notification
+function closeNotification() {
+    const notification = document.getElementById('Notification');
+    notification.style.display = 'none';
+}

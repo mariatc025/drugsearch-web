@@ -31,6 +31,8 @@
                     <div class="dropdown-menu" id="profileDropdown">
                         <div class="username-display" id="dropdownUsername">Username</div>
                         <a href="profile.html" class="dropdown-item">Profile Settings</a>
+                        <a href="saved_drugs.html" class="dropdown-item">Saved Drugs</a>
+                        <a href="admin_panel.html" class="dropdown-item admin-only">Admin Panel</a>
                         <a href="#" class="dropdown-item" id="navLogout">Logout</a>
                     </div>
                 </div>
@@ -115,6 +117,12 @@
                 </div>
             </div>
         </section>
+        <div id="Notification" class="notification" >
+            <span id="notificationMessage">email: admin@gmail.com pwd: admin1</span>
+            <br>
+            <span id="notificationMessage">email: user@gmail.com pwd: user1</span>
+            <span class="close-btn" onclick="closeNotification()">&times;</span>
+        </div>
     </main>
 
     <footer>

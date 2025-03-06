@@ -21,15 +21,29 @@
 }
 
 html, body {
-  overscroll-behavior-y: none;
-  overflow-y: scroll;
+  height: 100%;
 }
 
 body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   font-family: 'Montserrat', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1.6;
   background-color: var(--light-color);
 }
+
+main {
+  flex: 1 0 auto;
+}
+
+footer {
+  flex-shrink: 0;
+  background-color: var(--light-color); /* Match your existing background */
+  padding: 1rem 0; /* Add some padding if needed */
+  text-align: center; /* Center the footer text */
+}
+
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Merriweather', serif;
@@ -846,6 +860,32 @@ a:hover {
 
 .auth-form button:hover {
   background-color: #553c9a;
+}
+
+.notification {
+  position: fixed;
+  right: 20px;
+  top: 100px;
+  background-color: #f8f9fa;
+  border-left: 3px solid #007bff;
+  padding: 15px 40px 15px 15px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  z-index: 1000;
+  max-width: 300px;
+  font-size: 14px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  font-size: 20px;
+  cursor: pointer;
+  color: #666;
+}
+
+.close-btn:hover {
+  color: #333;
 }
 
 /* --------------- Messages --------------- */

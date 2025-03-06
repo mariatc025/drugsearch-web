@@ -41,77 +41,89 @@ function loadDrugInfo(drugId) {
             if (drugNameBreadcrumb) {
                 drugNameBreadcrumb.textContent = drug.drug_name;
             }
+
+            // Check if the drug is already saved
+            const checkSavedPromise = isSavedDrug(drugId);
             
-            // Create HTML for drug info
-            let html = `
-                <h1>${drug.drug_name}</h1>
-                <div class="drug-details">
-                    <div class="drug-info-columns">
-                        <div class="drug-info-text">
-                            <p><strong>DrugBank ID:</strong> ${drug.drugbank_id}</p>
-                            <p><strong>Formula:</strong> ${drug.molecular_formula || 'Not available'}</p>
-                            <p><strong>Weight:</strong> ${drug.molecular_weight || 'Not available'} g/mol</p>
-                            <p><strong>Classification:</strong> ${drug.Classification_direct_parent || 'Not available'}</p>
-                        </div>
-                        <div class="drug-image-container" id="drugImageContainer">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Loading structure image...</span>
+            checkSavedPromise.then(isSaved => {
+                // Create HTML for drug info and give the option to save drug
+                let html = `
+                    <div class="drug-header d-flex justify-content-between align-items-center">
+                        <h1>${drug.drug_name}</h1>
+                        ${isSaveButtonEnabled() ? `
+                        <button id="saveDrugBtn" class="btn btn-outline-primary" onclick="saveDrug(${drugId}, '${drug.drug_name}')" ${isSaved ? 'disabled' : ''}>
+                                <i class="heart-icon">${isSaved ? '♥' : '♡'}</i> ${isSaved ? 'Saved' : 'Save Drug'}
+                        </button>
+                    ` : ''}
+                    </div>
+                    <div class="drug-details">
+                        <div class="drug-info-columns">
+                            <div class="drug-info-text">
+                                <p><strong>DrugBank ID:</strong> ${drug.drugbank_id}</p>
+                                <p><strong>Formula:</strong> ${drug.molecular_formula || 'Not available'}</p>
+                                <p><strong>Weight:</strong> ${drug.molecular_weight || 'Not available'} g/mol</p>
+                                <p><strong>Classification:</strong> ${drug.Classification_direct_parent || 'Not available'}</p>
                             </div>
-                            <p class="mt-2">Loading structure image...</p>
+                            <div class="drug-image-container" id="drugImageContainer">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading structure image...</span>
+                                </div>
+                                <p class="mt-2">Loading structure image...</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="drug-description">
-                    <h2>Description</h2>
-                    <p>${drug.description || 'No description available'}</p>
-                </div>
-                
-                <div class="drug-indications">
-                    <h2>Indications</h2>
-                    <p>${drug.indications || 'No indications available'}</p>
-                </div>
-                
-                <div id="sideEffects">
-                    <h2>Side Effects</h2>
-                    <div class="text-center py-3">
-                        <div class="spinner-border text-primary spinner-border-sm" role="status">
-                            <span class="visually-hidden">Loading side effects...</span>
-                        </div>
-                        <p class="mt-2">Loading side effects...</p>
+                    
+                    <div class="drug-description">
+                        <h2>Description</h2>
+                        <p>${drug.description || 'No description available'}</p>
                     </div>
-                </div>
-                
-                <div id="manufacturers">
-                    <h2>Manufacturers</h2>
-                    <div class="text-center py-3">
-                        <div class="spinner-border text-primary spinner-border-sm" role="status">
-                            <span class="visually-hidden">Loading manufacturers...</span>
-                        </div>
-                        <p class="mt-2">Loading manufacturers...</p>
+                    
+                    <div class="drug-indications">
+                        <h2>Indications</h2>
+                        <p>${drug.indications || 'No indications available'}</p>
                     </div>
-                </div>
-                
-                <div id="interactions">
-                    <h2>Drug Interactions</h2>
-                    <div class="text-center py-3">
-                        <div class="spinner-border text-primary spinner-border-sm" role="status">
-                            <span class="visually-hidden">Loading interactions...</span>
+                    
+                    <div id="sideEffects">
+                        <h2>Side Effects</h2>
+                        <div class="text-center py-3">
+                            <div class="spinner-border text-primary spinner-border-sm" role="status">
+                                <span class="visually-hidden">Loading side effects...</span>
+                            </div>
+                            <p class="mt-2">Loading side effects...</p>
                         </div>
-                        <p class="mt-2">Loading interactions...</p>
                     </div>
-                </div>
-            `;
+                    
+                    <div id="manufacturers">
+                        <h2>Manufacturers</h2>
+                        <div class="text-center py-3">
+                            <div class="spinner-border text-primary spinner-border-sm" role="status">
+                                <span class="visually-hidden">Loading manufacturers...</span>
+                            </div>
+                            <p class="mt-2">Loading manufacturers...</p>
+                        </div>
+                    </div>
+                    
+                    <div id="interactions">
+                        <h2>Drug Interactions</h2>
+                        <div class="text-center py-3">
+                            <div class="spinner-border text-primary spinner-border-sm" role="status">
+                                <span class="visually-hidden">Loading interactions...</span>
+                            </div>
+                            <p class="mt-2">Loading interactions...</p>
+                        </div>
+                    </div>
+                `;
             
-            drugInfoContainer.innerHTML = html;
-            
-            // Load PubChem image
-            loadPubChemImage(drugId);
-            
-            // Load additional information such as side effects, manufacturers and interactions
-            loadSideEffects(drugId);
-            loadManufacturers(drugId);
-            loadInteractions(drugId);
+                drugInfoContainer.innerHTML = html;
+                
+                // Load PubChem image
+                loadPubChemImage(drugId);
+                
+                // Load additional information such as side effects, manufacturers and interactions
+                loadSideEffects(drugId);
+                loadManufacturers(drugId);
+                loadInteractions(drugId);
+            });
         })
         .catch(error => {
             drugInfoContainer.innerHTML = `
@@ -121,6 +133,68 @@ function loadDrugInfo(drugId) {
                 </div>
             `;
         });
+}
+
+// Function to check if save button should be enabled (user logged in)
+function isSaveButtonEnabled() {
+    return sessionStorage.getItem('user_id') !== null;
+}
+
+// Function to save a drug
+function saveDrug(drugId, drugName) {
+    const userId = sessionStorage.getItem('user_id');
+    
+    if (!userId) {
+        showMessage('Please log in to save drugs', 'error');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('action', 'save_drug');
+    formData.append('user_id', userId);
+    formData.append('drug_id', drugId);
+    
+    fetch('php/save_drug.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            showMessage(`${drugName} has been saved`, 'success');
+            // Update the save button to indicate it's saved
+            const saveDrugBtn = document.getElementById('saveDrugBtn');
+            if (saveDrugBtn) {
+                saveDrugBtn.innerHTML = '<i class="heart-icon">♥</i> Saved';
+                saveDrugBtn.disabled = true;
+            }
+        } else {
+            showMessage(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        showMessage('Error saving drug: ' + error.message, 'error');
+    });
+}
+
+// Function to check if a drug is already saved by the user
+function isSavedDrug(drugId) {
+    const userId = sessionStorage.getItem('user_id');
+    
+    if (!userId) {
+        return Promise.resolve(false);
+    }
+    
+    return fetch(`php/get_saved_drugs.php?user_id=${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success' && data.savedDrugs) {
+                // Use strict equality and convert to string to ensure correct comparison
+                return data.savedDrugs.some(drug => String(drug.idDrug) === String(drugId));
+            }
+            return false;
+        })
+        .catch(() => false);
 }
 
 // Function to load pubchem image

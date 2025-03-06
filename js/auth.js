@@ -30,10 +30,8 @@ function handleLogin(event) {
             // Store user information in session storage
             sessionStorage.setItem('user_id', data.user_id || email);
             sessionStorage.setItem('username', data.username || email.split('@')[0]);
-            sessionStorage.setItem('role', data.role || 'user'); // Store role
-            
-            //showMessage('Login successful', 'success');
-            
+            sessionStorage.setItem('role', data.role || 'User');
+                        
             // Redirect to home page after short delay
             setTimeout(() => {
                 window.location.href = 'index.html';
@@ -243,4 +241,85 @@ function switchToViewMode() {
         viewSection.style.display = 'block';
         editSection.style.display = 'none';
     }
+}
+
+// Function to handle account deletion
+function handleDeleteAccount(event) {
+    event.preventDefault();
+    
+    const password = document.getElementById('deleteAccountPassword').value;
+    
+    if (!password) {
+        showMessage('Please enter your current password', 'error');
+        return;
+    }
+
+    // Create form data
+    const formData = new FormData();
+    formData.append('action', 'deleteAccount');
+    formData.append('user_id', sessionStorage.getItem('user_id'));
+    formData.append('password', password);
+
+    // Send the delete account request to profile.php
+    fetch('php/profile.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            // Clear session storage
+            sessionStorage.clear();
+            
+            // Show success message
+            showMessage('Account deleted successfully', 'success');
+            
+            // Redirect to home page after short delay
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1500);
+        } else {
+            showMessage('Account deletion failed: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        showMessage('Error: ' + error.message, 'error');
+    });
+}
+
+// Function to handle admin request
+function handleAdminRequest(event) {
+    event.preventDefault();
+    
+    const reason = document.getElementById('requestReason').value;
+    
+    if (!reason) {
+        showMessage('Please provide a reason for your request', 'error');
+        return;
+    }
+    
+    // Create form data
+    const formData = new FormData();
+    formData.append('action', 'adminRequest');
+    formData.append('user_id', sessionStorage.getItem('user_id'));
+    formData.append('username', sessionStorage.getItem('username'));
+    formData.append('reason', reason);
+    
+    // Send the admin request to admin.php
+    fetch('php/admin.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            showMessage('Admin request submitted successfully', 'success');
+            document.getElementById('requestReason').value = '';
+        } else {
+            showMessage('Request failed: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        showMessage('Error: ' + error.message, 'error');
+    });
 }
