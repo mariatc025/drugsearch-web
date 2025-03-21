@@ -36,7 +36,6 @@ function loadDrugInfo(drugId) {
                 `;
                 return;
             }
-            
             // Update breadcrumb with drug name
             if (drugNameBreadcrumb) {
                 drugNameBreadcrumb.textContent = drug.drug_name;
@@ -59,7 +58,9 @@ function loadDrugInfo(drugId) {
                     <div class="drug-details">
                         <div class="drug-info-columns">
                             <div class="drug-info-text">
-                                <p><strong>DrugBank ID:</strong> ${drug.drugbank_id}</p>
+                                <p><strong>DrugBank ID:</strong> 
+    ${drug.drugbank_id ? `<a href="https://go.drugbank.com/drugs/${drug.drugbank_id}" target="_blank">${drug.drugbank_id}</a>` : 'Not available'}
+</p>
                                 <p><strong>Formula:</strong> ${drug.molecular_formula || 'Not available'}</p>
                                 <p><strong>Weight:</strong> ${drug.molecular_weight || 'Not available'} g/mol</p>
                                 <p><strong>Classification:</strong> ${drug.Classification_direct_parent || 'Not available'}</p>
@@ -133,6 +134,62 @@ function loadDrugInfo(drugId) {
                 </div>
             `;
         });
+let html = `
+    <h1>${drug.drug_name}</h1>
+    <div class="drug-details">
+        <div class="drug-info-columns">
+            <div class="drug-info-text">
+                <p><strong>DrugBank ID:</strong> 
+                    ${drug.drugbank_id ? `<a href="https://go.drugbank.com/drugs/${drug.drugbank_id}" target="_blank">${drug.drugbank_id}</a>` : 'Not available'}
+                </p>
+                <p><strong>PubChem:</strong> 
+                    ${drug.pubchem_cid ? `<a href="https://pubchem.ncbi.nlm.nih.gov/compound/${drug.pubchem_cid}" target="_blank">${drug.pubchem_cid}</a>` : 'Not available'}
+                </p>
+                <p><strong>Formula:</strong> ${drug.molecular_formula || 'Not available'}</p>
+                <p><strong>Weight:</strong> ${drug.molecular_weight || 'Not available'} g/mol</p>
+                <p><strong>Classification:</strong> ${drug.Classification_direct_parent || 'Not available'}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="drug-image-container text-center" id="drugImageContainer">
+        <p class="text-muted">Loading structure image...</p>
+    </div>
+`;
+
+}
+
+function loadSideEffects(drugId) {
+    // Get the sideEffects container
+    const container = document.getElementById('sideEffects');
+    // Fetch the side effects for that specific drug id
+    fetch(`php/get_side_effects.php?id=${drugId}`)
+        .then(response => response.json())
+        .then(data => {
+            // if there are no side effecs display this
+            if (!data || data.length === 0) {
+                container.innerHTML = '<h2>Side Effects</h2><p>No side effects information available.</p>';
+                return;
+            }
+            // Otherwise iterate through the side effects creating a list and display the frequency percent or the lower and upper bound
+            let html = '<h2>Side Effects</h2><ul class="side-effects-list">';
+            data.forEach(effect => {
+                let frequencyInfo = '';
+                if (effect.frequency_percent) {
+                    frequencyInfo = ` <span class="badge bg-info text-white">${effect.frequency_percent}</span>`;
+                } else if (effect.lower_bound && effect.upper_bound) {
+                    frequencyInfo = ` <span class="badge bg-info text-white">${effect.lower_bound}% to ${effect.upper_bound}%</span>`;
+                }
+                
+                html += `<li>${effect.se_name}${frequencyInfo}</li>`;
+            });
+            html += '</ul>';
+            
+            container.innerHTML = html;
+        })
+        .catch(error => {
+            container.innerHTML = `<h2>Side Effects</h2><p class="text-danger">Error loading side effects: ${error.message}</p>`;
+        });
 }
 
 // Function to check if save button should be enabled (user logged in)
@@ -199,21 +256,25 @@ function isSavedDrug(drugId) {
 
 // Function to load pubchem image
 function loadPubChemImage(drugId) {
-    // Get the drugImage container
     const container = document.getElementById('drugImageContainer');
-    // Fetch the pubchem cid for that specific drug id
+    
+    if (!container) {
+        console.error("Error: 'drugImageContainer' not found.");
+        return;
+    }
+
     fetch(`php/get_pubchem_cid.php?id=${drugId}`)
         .then(response => response.json())
         .then(data => {
-            // If the fetching is successful modify the pubchem url with that id
             if (data.status === 'success' && data.pubchem_cid) {
-                // PubChem image URL
                 const imageUrl = `https://pubchem.ncbi.nlm.nih.gov/image/imgsrv.fcgi?cid=${data.pubchem_cid}&t=l`;
-                
-                // Add the obtained image into the container along with a caption
+                const pubchemUrl = `https://pubchem.ncbi.nlm.nih.gov/compound/${data.pubchem_cid}`;
+
                 container.innerHTML = `
-                    <img src="${imageUrl}" alt="Drug structure" class="drug-structure-image">
-                    <p class="image-caption">Structure from PubChem</p>
+                    <a href="${pubchemUrl}" target="_blank">
+                        <img src="${imageUrl}" alt="Drug structure" class="drug-structure-image">
+                    </a>
+                    <p class="image-caption">Click the image to view on PubChem</p>
                 `;
             } else {
                 container.innerHTML = '<p class="text-muted">No structure image available</p>';
@@ -221,39 +282,7 @@ function loadPubChemImage(drugId) {
         })
         .catch(error => {
             container.innerHTML = '<p class="text-muted">No structure image available</p>';
-        });
-}
-
-function loadSideEffects(drugId) {
-    // Get the sideEffects container
-    const container = document.getElementById('sideEffects');
-    // Fetch the side effects for that specific drug id
-    fetch(`php/get_side_effects.php?id=${drugId}`)
-        .then(response => response.json())
-        .then(data => {
-            // if there are no side effecs display this
-            if (!data || data.length === 0) {
-                container.innerHTML = '<h2>Side Effects</h2><p>No side effects information available.</p>';
-                return;
-            }
-            // Otherwise iterate through the side effects creating a list and display the frequency percent or the lower and upper bound
-            let html = '<h2>Side Effects</h2><ul class="side-effects-list">';
-            data.forEach(effect => {
-                let frequencyInfo = '';
-                if (effect.frequency_percent) {
-                    frequencyInfo = ` <span class="badge bg-info text-white">${effect.frequency_percent}</span>`;
-                } else if (effect.lower_bound && effect.upper_bound) {
-                    frequencyInfo = ` <span class="badge bg-info text-white">${effect.lower_bound}% to ${effect.upper_bound}%</span>`;
-                }
-                
-                html += `<li>${effect.se_name}${frequencyInfo}</li>`;
-            });
-            html += '</ul>';
-            
-            container.innerHTML = html;
-        })
-        .catch(error => {
-            container.innerHTML = `<h2>Side Effects</h2><p class="text-danger">Error loading side effects: ${error.message}</p>`;
+            console.error("Error fetching PubChem image:", error);
         });
 }
 
