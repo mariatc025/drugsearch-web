@@ -31,9 +31,7 @@ body {
   font-family: 'Montserrat', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1.6;
   background-color: var(--light-color);
-  padding-top: 50px;
 }
-
 
 main {
   flex: 1 0 auto;
@@ -703,6 +701,10 @@ a:hover {
   display: grid;
   grid-template-columns: 1fr;
   gap: 2.5rem;
+  border-top: 1px solid var(--border-color);
+}
+#drugInfoTabs {
+  transform: translateY(1px); 
 }
 
 .drug-info h1 {
@@ -803,11 +805,76 @@ a:hover {
   font-family: 'Montserrat', sans-serif;
 }
 
+.scrollable-content {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 5px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 15px;
+  background-color: white;
+}
+
+.nav-tabs {
+  position: relative;
+  margin-bottom: -1px; 
+  z-index: 10; 
+  background-color: transparent;
+}
+
+.nav-tabs .nav-link {
+  background-color: #f8fafc;
+  border: 1px solid var(--border-color);
+  border-bottom: none;
+  margin-right: 5px;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.nav-tabs .nav-link.active {
+  background-color: white; 
+  border-bottom: 1px solid white; 
+  margin-bottom: -1px;
+}
+
+.table-responsive {
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+
+.table th {
+  background-color: var(--gray-light-color);
+  color: var(--secondary-color);
+  font-weight: 600;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.badge {
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.side-effects-list li, .manufacturers-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.side-effects-list .badge {
+  min-width: 60px;
+  text-align: center;
+}
+
 .back-to-search {
   display: flex;
   gap: 1.5rem;
   justify-content: center;
 }
+
 
 /*  --------------- Authentication Pages --------------- */
 .auth-container {
@@ -1220,47 +1287,6 @@ footer {
     grid-template-columns: 1fr;
   }
 }
-.sticky-nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    background: white;
-    z-index: 1000;
-    border-bottom: 2px solid #ddd;
-    padding: 10px;
-    text-align: center;
-}
-
-.sticky-nav ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-}
-
-.sticky-nav ul li {
-    display: inline;
-}
-
-.sticky-nav ul li a {
-    text-decoration: none;
-    font-weight: bold;
-    color: #4a5568;
-    padding: 5px 10px;
-}
-
-.sticky-nav ul li a:hover {
-    text-decoration: underline;
-}
-
-/* Add padding to prevent content from being hidden */
-.drug-section:first-child {
-    padding-top: 80px; /* Adjust based on navbar height */
-}
-
 
 
 
