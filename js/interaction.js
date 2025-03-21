@@ -242,7 +242,8 @@ function handleInteractionCheck(event) {
 function displayInteractionResults(data, drugs) {
     const resultsContainer = document.getElementById('interactionResults');
     resultsContainer.classList.add('has-results');
-    // Handle errors
+
+    // Handle error cases
     if (data.status === 'error') {
         resultsContainer.innerHTML = `
             <div class="alert alert-danger">
@@ -269,10 +270,23 @@ function displayInteractionResults(data, drugs) {
         return;
     }
 
-    // Build results HTML
+    // Group interactions by description and deduplicate drug pairs
+    const interactionGroups = {};
+    data.interactions.forEach(interaction => {
+        const desc = interaction.description || 'No description available';
+        const sortedDrugs = [interaction.drug1_name, interaction.drug2_name].sort();
+        const drugPair = sortedDrugs.join(' + ');
+        
+        if (!interactionGroups[desc]) {
+            interactionGroups[desc] = new Set();
+        }
+        interactionGroups[desc].add(drugPair);
+    });
+
+    // Build HTML structure
     let html = `
         <div class="interaction-summary">
-            <h2>${data.interactions.length} Potential Interaction${data.interactions.length > 1 ? 's' : ''} Found</h2>
+            <h2>${Object.keys(interactionGroups).length} Unique Interaction${Object.keys(interactionGroups).length > 1 ? 's' : ''} Found</h2>
             <div class="drugs-checked">
                 <h3>Medications Checked:</h3>
                 <ul>
@@ -284,8 +298,10 @@ function displayInteractionResults(data, drugs) {
             <div class="accordion" id="interactionAccordion">
     `;
 
-    // Add interaction details
-    data.interactions.forEach((interaction, index) => {
+    // Populate grouped interactions
+    let index = 0;
+    for (const [description, drugPairsSet] of Object.entries(interactionGroups)) {
+        const drugPairs = Array.from(drugPairsSet);
         html += `
             <div class="accordion-item">
                 <h2 class="accordion-header" id="heading${index}">
@@ -293,22 +309,21 @@ function displayInteractionResults(data, drugs) {
                         type="button" 
                         data-bs-toggle="collapse" 
                         data-bs-target="#collapse${index}">
-                        ${interaction.drug1_name} + ${interaction.drug2_name}
-                        
+                        ${drugPairs.join(', ')}
                     </button>
                 </h2>
                 <div id="collapse${index}" class="accordion-collapse collapse ${index === 0 ? 'show' : ''}">
                     <div class="accordion-body">
-                        ${interaction.description ? `
                         <div class="interaction-description">
                             <h5>Description</h5>
-                            <p>${interaction.description}</p>
-                        </div>` : ''}
+                            <p>${description}</p>
+                        </div>
                     </div>
                 </div>
             </div>
         `;
-    });
+        index++;
+    }
 
     html += `</div></div>`;
     resultsContainer.innerHTML = html;
