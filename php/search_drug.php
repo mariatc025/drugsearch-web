@@ -27,34 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['search'])) {
                 $params = ["%$search%"];
                 break;
                 
-	    case 'indication':
-	        $query = "SELECT DISTINCT d.* FROM Drugs d 
-		         WHERE d.indications LIKE ?";
-	        $params = ["%$search%"];
-	    
-	        $stmt = $pdo->prepare($query);
-	        $stmt->execute($params);
-	        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	    
-	        // Process results to identify the matching indication
-	        foreach ($results as &$drug) {
-	    	    if (stripos($drug['indications'], $search) !== false) {
-		        // Find the matching indication
-		        $indications = explode(';', $drug['indications']);
-		        foreach ($indications as $indication) {
-			    $indication = trim($indication);
-			    if (stripos($indication, $search) !== false) {
-			        $drug['matched_indication'] = $indication;
-			        break;
-			    }
-		        }
-		    }
-	        }
-	    
-	        echo json_encode(["status" => "success", "drugs" => $results]);
-	        return;
-	        break;
-                
             case 'manufacturer':
                 $query = "SELECT DISTINCT d.* FROM Drugs d 
                          JOIN Drug_has_Manufacturer dhm ON d.idDrug = dhm.idDrug 
