@@ -8,8 +8,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Function to loadDrugInfo
 function loadDrugInfo(drugId) {
-    // Get element drugInfo (found in drug.html) and create the container along with loading spinner
+    // Get the drug info container
     const drugInfoContainer = document.getElementById('drugInfo');
+    
+    // Display a loading spinner while fetching data
     drugInfoContainer.innerHTML = `
         <div class="text-center p-5">
             <div class="spinner-border text-primary" role="status">
@@ -18,15 +20,15 @@ function loadDrugInfo(drugId) {
             <p class="mt-3">Loading drug information...</p>
         </div>
     `;
-    
-    // Obtain drugname
+
+    // Get the breadcrumb element for the drug name
     const drugNameBreadcrumb = document.getElementById('drugName');
-    
-    // Fetch drug information from get_drug.php
+
+    // Fetch drug data from the server
     fetch(`php/get_drug.php?id=${drugId}`)
         .then(response => response.json())
         .then(drug => {
-            // if the drug doesn't exist or it gives an error display error screen
+            // If the drug is not found or an error occurred
             if (!drug || drug.status === 'error') {
                 drugInfoContainer.innerHTML = `
                     <div class="alert alert-danger m-4">
@@ -36,31 +38,40 @@ function loadDrugInfo(drugId) {
                 `;
                 return;
             }
-            // Update breadcrumb with drug name
+
+            // Update breadcrumb with the drug name
             if (drugNameBreadcrumb) {
                 drugNameBreadcrumb.textContent = drug.drug_name;
             }
 
-            // Check if the drug is already saved
-            const checkSavedPromise = isSavedDrug(drugId);
-            
-            checkSavedPromise.then(isSaved => {
-                // Create HTML for drug info and give the option to save drug
+            // Check if the drug is saved
+            isSavedDrug(drugId).then(isSaved => {
+                // Generate HTML for the page
                 let html = `
+                    <nav id="drugNav" class="sticky-nav">
+                        <ul>
+                            <li><a href="#description">Description</a></li>
+                            <li><a href="#sideEffects">Side Effects</a></li>
+                            <li><a href="#manufacturers">Manufacturers</a></li>
+                            <li><a href="#interactions">Drug Interactions</a></li>
+                        </ul>
+                    </nav>
+
                     <div class="drug-header d-flex justify-content-between align-items-center">
                         <h1>${drug.drug_name}</h1>
                         ${isSaveButtonEnabled() ? `
                         <button id="saveDrugBtn" class="btn btn-outline-primary" onclick="saveDrug(${drugId}, '${drug.drug_name}')" ${isSaved ? 'disabled' : ''}>
-                                <i class="heart-icon">${isSaved ? '♥' : '♡'}</i> ${isSaved ? 'Saved' : 'Save Drug'}
+                            <i class="heart-icon">${isSaved ? '♥' : '♡'}</i> ${isSaved ? 'Saved' : 'Save Drug'}
                         </button>
-                    ` : ''}
+                        ` : ''}
                     </div>
+
                     <div class="drug-details">
                         <div class="drug-info-columns">
                             <div class="drug-info-text">
                                 <p><strong>DrugBank ID:</strong> 
-    ${drug.drugbank_id ? `<a href="https://go.drugbank.com/drugs/${drug.drugbank_id}" target="_blank">${drug.drugbank_id}</a>` : 'Not available'}
-</p>
+                                    ${drug.drugbank_id ? `<a href="https://go.drugbank.com/drugs/${drug.drugbank_id}" target="_blank">${drug.drugbank_id}</a>` : 'Not available'}
+                                </p>
                                 <p><strong>Formula:</strong> ${drug.molecular_formula || 'Not available'}</p>
                                 <p><strong>Weight:</strong> ${drug.molecular_weight || 'Not available'} g/mol</p>
                                 <p><strong>Classification:</strong> ${drug.Classification_direct_parent || 'Not available'}</p>
@@ -73,18 +84,13 @@ function loadDrugInfo(drugId) {
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="drug-description">
+
+                    <div id="description" class="drug-section">
                         <h2>Description</h2>
                         <p>${drug.description || 'No description available'}</p>
                     </div>
-                    
-                    <div class="drug-indications">
-                        <h2>Indications</h2>
-                        <p>${drug.indications || 'No indications available'}</p>
-                    </div>
-                    
-                    <div id="sideEffects">
+
+                    <div id="sideEffects" class="drug-section">
                         <h2>Side Effects</h2>
                         <div class="text-center py-3">
                             <div class="spinner-border text-primary spinner-border-sm" role="status">
@@ -93,8 +99,8 @@ function loadDrugInfo(drugId) {
                             <p class="mt-2">Loading side effects...</p>
                         </div>
                     </div>
-                    
-                    <div id="manufacturers">
+
+                    <div id="manufacturers" class="drug-section">
                         <h2>Manufacturers</h2>
                         <div class="text-center py-3">
                             <div class="spinner-border text-primary spinner-border-sm" role="status">
@@ -103,8 +109,8 @@ function loadDrugInfo(drugId) {
                             <p class="mt-2">Loading manufacturers...</p>
                         </div>
                     </div>
-                    
-                    <div id="interactions">
+
+                    <div id="interactions" class="drug-section">
                         <h2>Drug Interactions</h2>
                         <div class="text-center py-3">
                             <div class="spinner-border text-primary spinner-border-sm" role="status">
@@ -114,13 +120,12 @@ function loadDrugInfo(drugId) {
                         </div>
                     </div>
                 `;
-            
+
+                // Insert the generated HTML into the page
                 drugInfoContainer.innerHTML = html;
-                
-                // Load PubChem image
+
+                // Load additional data
                 loadPubChemImage(drugId);
-                
-                // Load additional information such as side effects, manufacturers and interactions
                 loadSideEffects(drugId);
                 loadManufacturers(drugId);
                 loadInteractions(drugId);
@@ -134,30 +139,8 @@ function loadDrugInfo(drugId) {
                 </div>
             `;
         });
-let html = `
-    <h1>${drug.drug_name}</h1>
-    <div class="drug-details">
-        <div class="drug-info-columns">
-            <div class="drug-info-text">
-                <p><strong>DrugBank ID:</strong> 
-                    ${drug.drugbank_id ? `<a href="https://go.drugbank.com/drugs/${drug.drugbank_id}" target="_blank">${drug.drugbank_id}</a>` : 'Not available'}
-                </p>
-                <p><strong>PubChem:</strong> 
-                    ${drug.pubchem_cid ? `<a href="https://pubchem.ncbi.nlm.nih.gov/compound/${drug.pubchem_cid}" target="_blank">${drug.pubchem_cid}</a>` : 'Not available'}
-                </p>
-                <p><strong>Formula:</strong> ${drug.molecular_formula || 'Not available'}</p>
-                <p><strong>Weight:</strong> ${drug.molecular_weight || 'Not available'} g/mol</p>
-                <p><strong>Classification:</strong> ${drug.Classification_direct_parent || 'Not available'}</p>
-            </div>
-        </div>
-    </div>
-    
-    <div class="drug-image-container text-center" id="drugImageContainer">
-        <p class="text-muted">Loading structure image...</p>
-    </div>
-`;
-
 }
+
 
 function loadSideEffects(drugId) {
     // Get the sideEffects container
@@ -191,11 +174,6 @@ data.forEach(effect => {
     // Always show the side effect name, but hide zero percentages
     html += `<li>${effect.se_name}${frequencyInfo}</li>`;
 });
-
-
-
-
-
             html += '</ul>';
             
             container.innerHTML = html;
@@ -355,3 +333,13 @@ function loadInteractions(drugId) {
             container.innerHTML = `<h2>Drug Interactions</h2><p class="text-danger">Error loading interactions: ${error.message}</p>`;
         });
 }
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('#drugNav a').forEach(anchor => {
+        anchor.addEventListener('click', function (event) {
+            event.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+});
+

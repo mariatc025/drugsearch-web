@@ -31,7 +31,9 @@ body {
   font-family: 'Montserrat', 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
   line-height: 1.6;
   background-color: var(--light-color);
+  padding-top: 50px;
 }
+
 
 main {
   flex: 1 0 auto;
@@ -1218,6 +1220,47 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+.sticky-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: white;
+    z-index: 1000;
+    border-bottom: 2px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.sticky-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.sticky-nav ul li {
+    display: inline;
+}
+
+.sticky-nav ul li a {
+    text-decoration: none;
+    font-weight: bold;
+    color: #4a5568;
+    padding: 5px 10px;
+}
+
+.sticky-nav ul li a:hover {
+    text-decoration: underline;
+}
+
+/* Add padding to prevent content from being hidden */
+.drug-section:first-child {
+    padding-top: 80px; /* Adjust based on navbar height */
+}
+
 
 
 
