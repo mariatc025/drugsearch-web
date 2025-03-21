@@ -173,16 +173,29 @@ function loadSideEffects(drugId) {
             }
             // Otherwise iterate through the side effects creating a list and display the frequency percent or the lower and upper bound
             let html = '<h2>Side Effects</h2><ul class="side-effects-list">';
-            data.forEach(effect => {
-                let frequencyInfo = '';
-                if (effect.frequency_percent) {
-                    frequencyInfo = ` <span class="badge bg-info text-white">${effect.frequency_percent}</span>`;
-                } else if (effect.lower_bound && effect.upper_bound) {
-                    frequencyInfo = ` <span class="badge bg-info text-white">${effect.lower_bound}% to ${effect.upper_bound}%</span>`;
-                }
-                
-                html += `<li>${effect.se_name}${frequencyInfo}</li>`;
-            });
+data.forEach(effect => {
+    let frequencyInfo = '';
+
+    // Convert values to numbers for proper comparison
+    const lower = parseFloat(effect.lower_bound);
+    const upper = parseFloat(effect.upper_bound);
+    const percent = parseFloat(effect.frequency_percent);
+
+    // Only show percentages if they are meaningful
+    if (!isNaN(percent) && percent > 0) {
+        frequencyInfo = ` <span class="badge bg-info text-white">${effect.frequency_percent}</span>`;
+    } else if (!isNaN(lower) && !isNaN(upper) && (lower > 0 || upper > 0)) {
+        frequencyInfo = ` <span class="badge bg-info text-white">${effect.lower_bound}% to ${effect.upper_bound}%</span>`;
+    }
+
+    // Always show the side effect name, but hide zero percentages
+    html += `<li>${effect.se_name}${frequencyInfo}</li>`;
+});
+
+
+
+
+
             html += '</ul>';
             
             container.innerHTML = html;
