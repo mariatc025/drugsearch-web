@@ -1,6 +1,6 @@
 # DrugSearch website
 
-DrugSearch is a web platform that allows users to explore detailed information about over 1,100 drugs, including side effects, interactions, subcategories, and manufacturers.
+DrugSearch is a web platform that allows users to explore detailed information about over 1,100 drugs, including 3,945 side effects, 413,532 interactions, subcategories, and 841 manufacturers.
 
 ## Usage
 
