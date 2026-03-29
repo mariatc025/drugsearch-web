@@ -4,7 +4,7 @@ DrugSearch is a web platform that allows users to explore detailed information a
 
 ## Usage
 
-1. Open the [DrugSearch Website](https://drugsearch-web.infinityfreeapp.com/index.html)
+1. Open the [DrugSearch Website](https://formacio.bq.ub.edu/~u254549/drugsearch-web/index.html)
 2. Login using the demo accounts or create an account:
 
 **User:** `user@gmail.com` / `user1`
